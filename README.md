@@ -8,7 +8,7 @@ to do: write a documentation.
 # Documentation (WIP)
 Once you have successfully imported the script in the form of a behaviour pack, you can activate it to a world. Make sure that Beta's APIs is activated on the experiments.
 - I recommend enabling content log files and content log GUI while using this addon. That way, you can know if the addon is working or not.
-- If content log files and content log GUI is enabled, once loading the world, the script will greet you with a message of "Working!". If it did not greet you, then one of these factors might be the reason:
+- If content log files and content log GUI is enabled, once loading the world, the script will greet you with a message of "Working...". If it did not greet you, then one of these factors might be the reason:
 - - You did something wrong with the installation
   - You did not turn on Beta's APIs on the experiments
   - You installed the wrong version
