@@ -3,7 +3,7 @@ A script for Minecraft: Bedrock Edition that focuses on building efficiently.
 
 Addon can be downloaded on the builds folder.
 
-to do: write a documentation.
+to do: finish a documentation.
 
 # Documentation (WIP)
 Once you have successfully imported the script in the form of a behaviour pack, you can activate it to a world. Make sure that Beta's APIs is activated on the experiments.
@@ -28,11 +28,21 @@ Examples of using commands:
 .age
 ```
 
-### Command structure
+### Command Structure
 The command structure for this script is almost identical to Minecraft's vanilla commands. Which is
 ```
 prefix + cmd[0] + cmd[1] + ... + cmd[n]
 ```
 There also exist sub-commands for more complex commands like set, gen, and shape.
+
+## List of Commands
+### Simple Commands
+1. Help
+  - Gives a list of all the commands available.
+
+2. Age
+  - Gives the current tick of the world.
+
+3. 
 
 (to be continued lol)
