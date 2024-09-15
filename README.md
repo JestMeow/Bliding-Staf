@@ -31,7 +31,7 @@ Examples of using commands:
 ### Command structure
 The command structure for this script is almost identical to Minecraft's vanilla commands. Which is
 ```
-"prefix" + cmd[0] + cmd[1] + ... + cmd[n]
+prefix + cmd[0] + cmd[1] + ... + cmd[n]
 ```
 There also exist sub-commands for more complex commands like set, gen, and shape.
 
