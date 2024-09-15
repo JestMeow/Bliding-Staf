@@ -17,7 +17,7 @@ Once you have successfully imported the script in the form of a behaviour pack, 
 
 ## Initialising the script
 1. Place an anvil and get a stick
-2. Name the stick "Selecc"
+2. Name the stick "Selecc"\n
 "Selecc" will be like a wand that you can use to select points and volumes you want to edit.
 After doing so, you are now allowed to use commands such as the help command.
 
