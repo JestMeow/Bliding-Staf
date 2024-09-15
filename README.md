@@ -1,7 +1,8 @@
 # Bliding-Staf
 A script for Minecraft: Bedrock Edition that focuses on building efficiently.
 
-Addon can be downloaded on the builds folder.
+- Addon can be downloaded on the builds folder.
+- Feel free to request changes. (I'm too lazy to optimize my code so ples do so for me :3)
 
 to do: finish a documentation.
 
