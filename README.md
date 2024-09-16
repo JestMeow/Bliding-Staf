@@ -6,6 +6,7 @@ A script for Minecraft: Bedrock Edition that focuses on building efficiently.
 
 to do: finish a documentation.
 
+
 # Documentation (WIP)
 Once you have successfully imported the script in the form of a behaviour pack, you can activate it to a world. Make sure that Beta's APIs is activated on the experiments.
 - I recommend enabling content log files and content log GUI while using this addon. That way, you can know if the addon is working or not.
@@ -15,15 +16,18 @@ Once you have successfully imported the script in the form of a behaviour pack, 
   - You installed the wrong version
   - The file is corrupted
 
-## Initialising the script
+
+## Initializing the script
 1. Place an anvil and get a stick
 2. Name the stick "Selecc"
 "Selecc" will be like a wand that you can use to select points and volumes you want to edit.
 After doing so, you are now allowed to use commands such as the help command.
 
+
 ### Optional Item
 Naming an arrow "Pointy" will give you an extra tool.
 - For its function, look at config command.
+
 
 ## Commaand Info
 Unlike Minecraft's vanilla commands which uses the prefix "/", due to limitaions, the command prefix for this addon is "."
@@ -33,12 +37,14 @@ Examples of using commands:
 .age
 ```
 
+
 ### Command Structure
 The command structure for this script is almost identical to Minecraft's vanilla commands. Which is
 ```
 prefix + cmd[0] + cmd[1] + ... + cmd[n]
 ```
 There also exist sub-commands for more complex commands like set, gen, and shape.
+
 
 ## List of Commands
 ### Config Command
@@ -64,6 +70,7 @@ There also exist sub-commands for more complex commands like set, gen, and shape
            2. teleport
               - When used, Pointy will teleport the player to the block they are facing.
 
+
 ### Simple Commands
 1. help
   - Gives a list of all the commands available.
@@ -74,6 +81,7 @@ There also exist sub-commands for more complex commands like set, gen, and shape
 3. distance, dis
   - Gives the distance of two points, point 1 and point 2
   - - Points are assigned by Selecc.
+
 
 ### Complex Commands
 1. shoot
@@ -115,6 +123,7 @@ There also exist sub-commands for more complex commands like set, gen, and shape
     ```
     - Note: Avoid spaces in expression.
 
+
 ### Generation Commands
 1. noise
    - Sub-commands:
@@ -130,9 +139,23 @@ There also exist sub-commands for more complex commands like set, gen, and shape
            ```
            .noise grass <amplitude> <frequency> <seed> <block(any)>
            ```
-       3. fillStatic (Unstable, do not use)
-       4. keepStatic (Unstable, do not use)
+       3. fillStatic
+          - Fills the selected volume with a block, randomly. Frequency of a block depends on its weight.
+          - Usage:
+            ```
+            .noise fillStatic <wieght_1> <block_1> <weight_2> <block_2> ... <weight_n> <block_n>
+            ```
+            - Weight can only be whole numbers.
+            - Examples of using this command:
+              ```
+              .noise fillStatic 2 stone 1 polished_andesite
+              ```
+              - 2:1 ratio of stone and polished andesite.
+       4. keepStatic
+          - Same as the fillStatic sub-command but only replaces air blocks.
+          - Usage is the same.
        5. fillPerlin (Unstable, do not use)
+
 
 2. shape
    - Sub-commands:
@@ -156,6 +179,7 @@ There also exist sub-commands for more complex commands like set, gen, and shape
            //may or may not be correct. Please confirm this later
            .shape cylinder <radius> <height> rot <rotX> <rotZ> <block permutation(Optional)> <placement type(Optional)>
            ```
+
 
 
 (to be continued lol)
