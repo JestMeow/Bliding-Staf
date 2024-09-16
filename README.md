@@ -69,6 +69,9 @@ There also exist sub-commands for more complex commands like set, noise, and sha
               - When used, Pointy will move the selected volume by 1 block to the direction the player is facing.
            2. teleport
               - When used, Pointy will teleport the player to the block they are facing.
+      3. flySpeed
+         - Types:
+           - Any whole number. If flySpeed is equal or less then 1, flySpeed will be default.
 
 
 ### Simple Commands
@@ -81,7 +84,10 @@ There also exist sub-commands for more complex commands like set, noise, and sha
 3. distance, dis
   - Gives the distance of two points, point 1 and point 2
   - - Points are assigned by Selecc.
-
+4. c
+  - Sets the player's gamemode to creative mode.
+5. sp
+  - Sets the player's gamemode to spectator mode.
 
 ### Complex Commands
 1. shoot
