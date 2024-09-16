@@ -304,8 +304,28 @@ async function matchCmd(cmd, sender) {
                 perlin2d("dirt", cmd[6], cmd[7], cmd[8]);
             }
             else if (cmd[1] == "fillStatic") {
-                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block, rand;
-                if (cmd[2] && !cmd[8])
+                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block;
+                var blocks = [], weight = [], pass = true;
+                var n = 2;
+                for (let j = 0; j < cmd.length - 2; j++) {
+                    if (j % 2 == 0) {
+                        if (Number.isInteger(Number(cmd[n])))
+                            weight.push(Number(cmd[n]));
+                        else {
+                            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"§cError: §rSyntax error.\"}]}");
+                            pass = false;
+                            break;
+                        }
+                    }
+                    else blocks.push(cmd[n]);
+                    n++;
+                }
+                for (let j = 0; j < weight.length; j++) {
+                    for (let k = 0; k < weight[j]; k++) {
+                        blocks.push(blocks[j]);
+                    }
+                }
+                if (cmd[2] && pass == true)
                     var tim = system.runInterval(() => {
                         if (i <= Math.abs(vx_2 - vx_1)) {
                             var j = 0;
@@ -313,52 +333,41 @@ async function matchCmd(cmd, sender) {
                             var tim2 = system.runInterval(() => {
                                 if (j <= Math.abs(vy_2 - vy_1)) {
                                     for (let k = 0; k <= Math.abs(vz_2 - vz_1); k++) {
-                                        rand = Math.random();
-                                        if (!cmd[4]) {
-                                            if (0.5 <= rand) block = cmd[2];
-                                            else block = cmd[3];
-                                        }
-                                        else if (cmd[4] != undefined && !cmd[5]) {
-                                            if (rand < 0.33) block = cmd[2];
-                                            else if (rand < 0.67 && rand >= 0.33) block = cmd[3];
-                                            else block = cmd[4];
-                                        }
-                                        else if (cmd[5] != undefined && !cmd[6]) {
-                                            if (rand < 0.25) block = cmd[2];
-                                            else if (rand < 0.5 && rand >= 0.25) block = cmd[3];
-                                            else if (rand < 0.75 && rand >= 0.5) block = cmd[4];
-                                            else block = cmd[5];
-                                        }
-                                        else if (cmd[6] != undefined && !cmd[7]) {
-                                            if (rand < 0.2) block = cmd[2];
-                                            else if (rand < 0.4 && rand >= 0.2) block = cmd[3];
-                                            else if (rand < 0.6 && rand >= 0.4) block = cmd[4];
-                                            else if (rand < 0.8 && rand >= 0.6) block = cmd[5];
-                                            else block = cmd[6];
-                                        }
-                                        else if (cmd[7] != undefined && !cmd[8]) {
-                                            if (rand < 0.17) block = cmd[2];
-                                            else if (rand < 0.33 && rand >= 0.17) block = cmd[3];
-                                            else if (rand < 0.5 && rand >= 0.33) block = cmd[4];
-                                            else if (rand < 0.67 && rand >= 0.5) block = cmd[5];
-                                            else if (rand < 0.83 && rand >= 0.67) block = cmd[6];
-                                            else block = cmd[7];
-                                        }
-                                        overworld.runCommand("setblock " + (vx_1 + (i * Math.sign(vx_2 - vx_1)) - Math.sign(vx_2 - vx_1)) + " " + (vy_1 + (j * Math.sign(vy_2 - vy_1))) + " " + (vz_1 + (k * Math.sign(vz_2 - vz_1))) + " " + block);
+                                        block = blocks[Math.floor(Math.random() * blocks.length)];
+                                        overworld.runCommand("setblock " + (Math.min(vx_1, vx_2) + i - 1) + " " + (Math.min(vy_1, vy_2) + j) + " " + (Math.min(vz_1, vz_2) + k) + " " + block);
                                     }
                                 } else system.clearRun(tim2);
                                 j++;
-                            }, 1);
+                            });
                         } else system.clearRun(tim);
                         i++;
                         if (world.gameRules.sendCommandFeedback == true)
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
                     }, (Math.abs(vy_2 - vy_1) + m));
-                else world.sendMessage("[Error]: Maximum block types for noise fillStatic is 6 a");
             }
             else if (cmd[1] == "keepStatic") {
-                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block, rand;
-                if (cmd[2] && !cmd[8])
+                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block;
+                var blocks = [], weight = [], pass = true;
+                var n = 2;
+                for (let j = 0; j < cmd.length - 2; j++) {
+                    if (j % 2 == 0) {
+                        if (Number.isInteger(Number(cmd[n])))
+                            weight.push(Number(cmd[n]));
+                        else {
+                            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"§cError: §rSyntax error.\"}]}");
+                            pass = false;
+                            break;
+                        }
+                    }
+                    else blocks.push(cmd[n]);
+                    n++;
+                }
+                for (let j = 0; j < weight.length; j++) {
+                    for (let k = 0; k < weight[j]; k++) {
+                        blocks.push(blocks[j]);
+                    }
+                }
+                if (cmd[2] && pass == true)
                     var tim = system.runInterval(() => {
                         if (i <= Math.abs(vx_2 - vx_1)) {
                             var j = 0;
@@ -366,48 +375,17 @@ async function matchCmd(cmd, sender) {
                             var tim2 = system.runInterval(() => {
                                 if (j <= Math.abs(vy_2 - vy_1)) {
                                     for (let k = 0; k <= Math.abs(vz_2 - vz_1); k++) {
-                                        rand = Math.random();
-                                        if (!cmd[4]) {
-                                            if (0.5 <= rand) block = cmd[2];
-                                            else block = cmd[3];
-                                        }
-                                        else if (cmd[4] != undefined && !cmd[5]) {
-                                            if (rand < 0.33) block = cmd[2];
-                                            else if (rand < 0.67 && rand >= 0.33) block = cmd[3];
-                                            else block = cmd[4];
-                                        }
-                                        else if (cmd[5] != undefined && !cmd[6]) {
-                                            if (rand < 0.25) block = cmd[2];
-                                            else if (rand < 0.5 && rand >= 0.25) block = cmd[3];
-                                            else if (rand < 0.75 && rand >= 0.5) block = cmd[4];
-                                            else block = cmd[5];
-                                        }
-                                        else if (cmd[6] != undefined && !cmd[7]) {
-                                            if (rand < 0.2) block = cmd[2];
-                                            else if (rand < 0.4 && rand >= 0.2) block = cmd[3];
-                                            else if (rand < 0.6 && rand >= 0.4) block = cmd[4];
-                                            else if (rand < 0.8 && rand >= 0.6) block = cmd[5];
-                                            else block = cmd[6];
-                                        }
-                                        else if (cmd[7] != undefined && !cmd[8]) {
-                                            if (rand < 0.17) block = cmd[2];
-                                            else if (rand < 0.33 && rand >= 0.17) block = cmd[3];
-                                            else if (rand < 0.5 && rand >= 0.33) block = cmd[4];
-                                            else if (rand < 0.67 && rand >= 0.5) block = cmd[5];
-                                            else if (rand < 0.83 && rand >= 0.67) block = cmd[6];
-                                            else block = cmd[7];
-                                        }
-                                        overworld.runCommand("setblock " + (vx_1 + (i * Math.sign(vx_2 - vx_1)) - Math.sign(vx_2 - vx_1)) + " " + (vy_1 + (j * Math.sign(vy_2 - vy_1))) + " " + (vz_1 + (k * Math.sign(vz_2 - vz_1))) + " " + block + " keep");
+                                        block = blocks[Math.floor(Math.random() * blocks.length)];
+                                        overworld.runCommand("setblock " + (Math.min(vx_1, vx_2) + i - 1) + " " + (Math.min(vy_1, vy_2) + j) + " " + (Math.min(vz_1, vz_2) + k) + " " + block + " [] keep");
                                     }
                                 } else system.clearRun(tim2);
                                 j++;
-                            }, 1);
+                            });
                         } else system.clearRun(tim);
                         i++;
                         if (world.gameRules.sendCommandFeedback == true)
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
                     }, (Math.abs(vy_2 - vy_1) + m));
-                else world.sendMessage("[Error]: Maximum block types for noise keepStatic is 6 a");
             }
             else if (cmd[1] == "fillPerlin") {
                 fun.noiseSeed(Number(cmd[3]));
@@ -493,7 +471,7 @@ async function matchCmd(cmd, sender) {
                         if (world.gameRules.sendCommandFeedback == true)
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (d + 2)) / 100) + "%\"}]}");
                     });
-                } finally { world.sendMessage("[Error]: " + fun.pref + "shape <shape> <cmd[2]> <cmd[3]> <cmd[4]>"); }
+                } catch (e) { world.sendMessage("[Error]: " + fun.pref + "shape <shape> <cmd[2]> <cmd[3]> <cmd[4]>"); }
             }
         }
         else if (cmd[1] == "deb") {
