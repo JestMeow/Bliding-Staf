@@ -43,7 +43,7 @@ The command structure for this script is almost identical to Minecraft's vanilla
 ```
 prefix + cmd[0] + cmd[1] + ... + cmd[n]
 ```
-There also exist sub-commands for more complex commands like set, gen, and shape.
+There also exist sub-commands for more complex commands like set, noise, and shape. But we'll get onto that later.
 
 
 ## List of Commands
