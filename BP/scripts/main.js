@@ -203,6 +203,16 @@ async function matchCmd(cmd, sender) {
             }
         });
     }
+    else if (cmd[0] == "c") {
+        system.run(() => {
+            sender.setGameMode("creative");
+        });
+    }
+    else if (cmd[0] == "sp") {
+        system.run(() => {
+            sender.setGameMode("spectator");
+        });
+    }
     else if (cmd == "a") {
         world.sendMessage("" + fun.noise(1, 3, 2));
     }
@@ -666,6 +676,19 @@ async function matchCmd(cmd, sender) {
         if (cmd[1]) {
             system.run(() => {
                 try {
+                    if (cmd[1] == "flySpeed") {
+                        if (!world.scoreboard.getObjective("_flySpeed"))
+                            world.scoreboard.addObjective("_flySpeed");
+                        var flySpeed = world.scoreboard.getObjective("_flySpeed");
+                        if (Number(cmd[2]) > 1 && Number.isInteger(Number(cmd[2]))) {
+                            flySpeed.setScore(sender, Number(cmd[2]));
+                            overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Set fly speed to " + cmd[2] + "\"}]}");
+                        }
+                        else {
+                            flySpeed.removeParticipant(sender);
+                            overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Fly speed is now default\"}]}");
+                        }
+                    }
                     if (cmd[1] == "placement" && cmd[2] == "force") {
                         sender.addTag("_force");
                         sender.removeTag("_replace");
@@ -793,5 +816,16 @@ world.afterEvents.itemUse.subscribe((eventData) => {
             else if (fac == "Up") vy = 1;
             eventData.source.teleport({ x: blocc.x + vx, y: blocc.y + vy, z: blocc.z + vz });
         } catch (err) { eventData.source.runCommandAsync("title @s actionbar Error: §cToo far") }
+    }
+});
+system.runInterval(() => {
+    for (let player of players) {
+        if (player.isSprinting && player.isFlying) {
+            var flySpeed = world.scoreboard.getObjective("_flySpeed");
+            if (flySpeed.getScore(player) > 1) {
+                var vewx = player.getViewDirection().x, vewz = player.getViewDirection().z;
+                player.applyKnockback(vewx, vewz, flySpeed.getScore(player) / 2, flySpeed.getScore(player) * player.getViewDirection().y / 2);
+            }
+        }
     }
 });
