@@ -7,14 +7,6 @@ import { Parser } from "./parser.js";
 let overworld = world.getDimension("overworld");
 let entities = overworld.getEntities();
 let players = overworld.getPlayers();
-/*
-world.scoreboard.removeObjective("sel.x1");
-world.scoreboard.removeObjective("sel.y1");
-world.scoreboard.removeObjective("sel.z1");
-
-world.scoreboard.removeObjective("sel.x2");
-world.scoreboard.removeObjective("sel.y2");
-world.scoreboard.removeObjective("sel.z2");*/
 
 Math.eval = function (expr, x = 1) {
     return Parser.evaluate(expr.replace("x", x));
@@ -47,19 +39,8 @@ system.runInterval(() => {
     sel2[1] = world.scoreboard.getObjective("sel.y2");
     sel2[2] = world.scoreboard.getObjective("sel.z2");
 }, 8);
-/*world.scoreboard.addObjective("sel.x1");
-world.scoreboard.addObjective("sel.y1");
-world.scoreboard.addObjective("sel.z1");
-
-world.scoreboard.addObjective("sel.x2");
-world.scoreboard.addObjective("sel.y2");
-world.scoreboard.addObjective("sel.z2");*/
 
 const selTool = "Selecc";
-/*let playerID = world.scoreboard.getObjective("playerid");
-if (!playerID) {
-    world.scoreboard.addObjective("playerid");
-}*/
 
 system.runInterval(() => {
     sel1[0] = world.scoreboard.getObjective("sel.x1");
@@ -397,7 +378,7 @@ async function matchCmd(cmd, sender) {
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
                     }, (Math.abs(vy_2 - vy_1) + m));
             }
-            else if (cmd[1] == "fillPerlin") {
+            /*else if (cmd[1] == "fillPerlin") {
                 fun.noiseSeed(Number(cmd[3]));
                 var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block, rand;
                 if (cmd[4])
@@ -450,7 +431,7 @@ async function matchCmd(cmd, sender) {
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
                     }, (Math.abs(vy_2 - vy_1) + m));
                 else world.sendMessage("[Error]: Maximum block types for noise fillPerlin is 6");
-            }
+            }*/
             else if (!cmd[1])
                 overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "noise <grass/gen> <amplitude> <frequency> <seed> <block(gen)>\"}]}");
         });
@@ -484,16 +465,6 @@ async function matchCmd(cmd, sender) {
                 } catch (e) { world.sendMessage("[Error]: " + fun.pref + "shape <shape> <cmd[2]> <cmd[3]> <cmd[4]>"); }
             }
         }
-        else if (cmd[1] == "deb") {
-            function test(rah = new function () { }) {
-                rah();
-            }
-            test(function () {
-                world.sendMessage("a");
-                world.sendMessage("e");
-            });
-        }
-
         else if (cmd[1] == "cone" || cmd[1] == "cylinder") {
             function genShape(cb = new function () { }) {
                 var tim = system.runInterval(() => {
@@ -506,7 +477,6 @@ async function matchCmd(cmd, sender) {
                     i++;
                     if (world.gameRules.sendCommandFeedback == true)
                         overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * blocc / V) / 100) + "%\"}]}");
-                    //overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * (i + Math.max(h, r)) / (2 * Math.max(h, r) + 2)) / 100) + "%\"}]}");
                 });
             }
             function shaperSetBlock(c7, c8 = "[]", c9 = "replace", c10 = "", j, k) {
@@ -529,11 +499,8 @@ async function matchCmd(cmd, sender) {
                             az = k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6]));
                             if (Math.pow(ax, 2) + Math.pow(az, 2) - (r * r * Math.pow(ay - h, 2)) / (h * h) <= 0 && ay <= h && ay >= 0) {
                                 blocc++;
-                                //if (Math.pow(i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6]) - k * fun.sin(Number(cmd[6])))) * fun.sin(Number(cmd[5])), 2) + Math.pow(k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6])), 2) - (r * r * Math.pow(((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) - h, 2)) / (h * h) <= 0 && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) <= h && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) >= 0) {
                                 shaperSetBlock(cmd[7], cmd[8], cmd[9], cmd[10], j, k);
                             }
-                            //overworld.runCommand("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone");
-                            //world.sendMessage("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone")
                         }
                     }
                 });
@@ -555,84 +522,8 @@ async function matchCmd(cmd, sender) {
                             az = k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6]));
                             if (Math.pow(ax, 2) + Math.pow(az, 2) - (r * r) <= 0 && ay <= h && ay >= 0) {
                                 blocc++;
-                                //if (Math.pow(i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6]) - k * fun.sin(Number(cmd[6])))) * fun.sin(Number(cmd[5])), 2) + Math.pow(k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6])), 2) - (r * r * Math.pow(((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) - h, 2)) / (h * h) <= 0 && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) <= h && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) >= 0) {
                                 shaperSetBlock(cmd[7], cmd[8], cmd[9], cmd[10], j, k);
                             } else continue;
-                            //overworld.runCommand("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone");
-                            //world.sendMessage("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone")
-                        }
-                    }
-                });
-            }
-
-
-        }
-        else if (cmd[1] == "cone" || cmd[1] == "cylinder") {
-            function genShape(cb = new function () { }) {
-                var tim = system.runInterval(() => {
-                    if (i <= Math.max(h, r)) {
-                        cb();
-                    } else {
-                        blocc = V;
-                        system.clearRun(tim);
-                    }
-                    i++;
-                    if (world.gameRules.sendCommandFeedback == true)
-                        overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * blocc / V) / 100) + "%\"}]}");
-                    //overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * (i + Math.max(h, r)) / (2 * Math.max(h, r) + 2)) / 100) + "%\"}]}");
-                });
-            }
-            function shaperSetBlock(c7, c8 = "[]", c9 = "replace", c10 = "", j, k) {
-                overworld.runCommand("setblock " + (px + i) + " " + (py + j) + " " + (pz + k) + " " + c7 + " " + c8 + " " + c9 + " " + c10);
-            }
-            if (cmd[1] == "cone") {
-                var px = Math.floor(sender.location.x), py = Math.floor(sender.location.y), pz = (sender.location.z);
-                var d = 2 * Number(cmd[2]);
-                var r = Number(cmd[2]);
-                var h = Number(cmd[3]);
-                var blocc = 0;
-                var i = -Math.max(h, r);
-                var ax, ay, az;
-                var V = Math.ceil(Math.PI * r * r * h / 3) + 2;
-                genShape(function () {
-                    for (let j = -Math.max(h, r); j <= Math.max(h, r); j += Math.sign(Math.max(h, r))) {
-                        for (let k = -Math.max(h, r); k <= Math.max(h, r); k++) {
-                            ax = i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.sin(Number(cmd[5]));
-                            ay = (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]));
-                            az = k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6]));
-                            if (Math.pow(ax, 2) + Math.pow(az, 2) - (r * r * Math.pow(ay - h, 2)) / (h * h) <= 0 && ay <= h && ay >= 0) {
-                                blocc++;
-                                //if (Math.pow(i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6]) - k * fun.sin(Number(cmd[6])))) * fun.sin(Number(cmd[5])), 2) + Math.pow(k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6])), 2) - (r * r * Math.pow(((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) - h, 2)) / (h * h) <= 0 && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) <= h && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) >= 0) {
-                                shaperSetBlock(cmd[7], cmd[8], cmd[9], cmd[10], j, k);
-                            }
-                            //overworld.runCommand("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone");
-                            //world.sendMessage("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone")
-                        }
-                    }
-                });
-            }
-            else if (cmd[1] == "cylinder") {
-                var px = Math.floor(sender.location.x), py = Math.floor(sender.location.y), pz = (sender.location.z);
-                var d = 2 * Number(cmd[2]);
-                var r = Number(cmd[2]);
-                var h = Number(cmd[3]);
-                var blocc = 0;
-                var i = -Math.max(h, r);
-                var ax, ay, az;
-                var V = Math.ceil(Math.PI * r * r * h) + 2;
-                genShape(function () {
-                    for (let j = -Math.max(h, r); j <= Math.max(h, r); j += Math.sign(Math.max(h, r))) {
-                        for (let k = -Math.max(h, r); k <= Math.max(h, r); k++) {
-                            ax = i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.sin(Number(cmd[5]));
-                            ay = (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]));
-                            az = k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6]));
-                            if (Math.pow(ax, 2) + Math.pow(az, 2) - (r * r) <= 0 && ay <= h && ay >= 0) {
-                                blocc++;
-                                //if (Math.pow(i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6]) - k * fun.sin(Number(cmd[6])))) * fun.sin(Number(cmd[5])), 2) + Math.pow(k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6])), 2) - (r * r * Math.pow(((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) - h, 2)) / (h * h) <= 0 && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) <= h && ((j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]))) >= 0) {
-                                shaperSetBlock(cmd[7], cmd[8], cmd[9], cmd[10], j, k);
-                            } else continue;
-                            //overworld.runCommand("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone");
-                            //world.sendMessage("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " stone")
                         }
                     }
                 });
