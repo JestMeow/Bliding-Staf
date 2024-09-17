@@ -146,13 +146,13 @@ There also exist sub-commands for more complex commands like set, noise, and sha
 1. noise
    - Sub-commands:
      1. gen
-       - Generates two dimentional perlin noise on the selected volume with a given block.
+       - Generates two dimensional perlin noise on the selected volume with a given block.
        - Usage:
            ```
            .noise gen <amplitude> <frequency> <seed> <block(any)> <block permutation(Optional)> <placement type(Optional)>
            ```
       2. grass
-        - Generates two dimentional perlin noise on the selected volume with dirt and a layer of grass on top.
+        - Generates two dimensional perlin noise on the selected volume with dirt and a layer of grass on top.
         - Usage:
            ```
            .noise grass <amplitude> <frequency> <seed>
