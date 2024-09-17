@@ -74,6 +74,7 @@ There also exist sub-commands for more complex commands like set, noise, and sha
               - When used, Pointy will move the selected volume by 1 block to the direction the player is facing.
            2. teleport
               - When used, Pointy will teleport the player to the block they are facing.
+         - Caution; when on move mode, pointy can only move a maximum volume of 64x384x64 blocks, any volume bigger might break your build.
       3. flySpeed
          - Types:
            - Any whole number. If flySpeed is equal or less then 1, flySpeed will be default.
@@ -93,6 +94,12 @@ There also exist sub-commands for more complex commands like set, noise, and sha
   - Sets the player's gamemode to creative mode.
 5. sp
   - Sets the player's gamemode to spectator mode.
+6. pos
+    - Sets point 1 or point 2 to the player's position.
+    - Usage:
+      ```
+      .pos <point_n>
+      ```
 
 ### Complex Commands
 1. shoot
