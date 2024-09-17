@@ -1,6 +1,11 @@
 # Bliding-Staf
 A script for Minecraft: Bedrock Edition that focuses on building efficiently.
 
+## About
+Bliding Staf is an addon or script for Minecraft: Bedrock Edition that serves as a tool for building efficiently and with minimal effort. This addon helps building by giving the player tools in the form of commands and items. This addon does not focus on terraforming but rather geometric shapes and some organic shapes.
+
+<br>
+
 - Addon can be downloaded on the builds folder.
 - Feel free to request changes. (I'm too lazy to optimize my code so ples do so for me :3)
 
@@ -26,10 +31,10 @@ After doing so, you are now allowed to use commands such as the help command.
 
 ### Optional Item
 Naming an arrow "Pointy" will give you an extra tool.
-- For its function, look at config command.
+- For its function, look at mode command.
 
 
-## Commaand Info
+## Command Info
 Unlike Minecraft's vanilla commands which uses the prefix "/", due to limitaions, the command prefix for this addon is "."
 Examples of using commands:
 ```
@@ -47,7 +52,7 @@ There also exist sub-commands for more complex commands like set, noise, and sha
 
 
 ## List of Commands
-### Config Command
+### Mode Command
 1. mode
    - Changes the mode of something.
    - Usage:
@@ -143,7 +148,7 @@ There also exist sub-commands for more complex commands like set, noise, and sha
         - Generates two dimentional perlin noise on the selected volume with dirt and a layer of grass on top.
         - Usage:
            ```
-           .noise grass <amplitude> <frequency> <seed> <block(any)>
+           .noise grass <amplitude> <frequency> <seed>
            ```
        3. fillStatic
           - Fills the selected volume with a block, randomly. Frequency of a block depends on its weight.
@@ -166,23 +171,21 @@ There also exist sub-commands for more complex commands like set, noise, and sha
 2. shape
    - Sub-commands:
      1. sphere
-        - Generates a sphere which point is on the floor of the coordinates of the player, in other words, on the coordinates of the player rounded down.
+        - Generates a sphere which point is on the floor of the coordinates of the player, in other words, on the coordinates of the player, rounded down to the lowest integer.
         - Usage
           ```
           .shape sphere <radius> <block(any)> <block permutation(Optional)> <placement type(Optional)>
           ```
       2. cone
-         - Generates a cone one the player's position.
+         - Generates a cone on the player's position.
          - Usage
            ```
-           //may or may not be correct. Please confirm this later
            .shape cone <radius> <height> rot <rotX> <rotZ> <block permutation(Optional)> <placement type(Optional)>
            ```
       3. cylinder
-         - Generates a cylinder one the player's position.
+         - Generates a cylinder on the player's position.
          - Usage
            ```
-           //may or may not be correct. Please confirm this later
            .shape cylinder <radius> <height> rot <rotX> <rotZ> <block permutation(Optional)> <placement type(Optional)>
            ```
 
