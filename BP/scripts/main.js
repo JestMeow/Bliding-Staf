@@ -8,6 +8,9 @@ let overworld = world.getDimension("overworld");
 let entities = overworld.getEntities();
 let players = overworld.getPlayers();
 
+const selTool = "Selecc";
+const pointyTool = "Pointy";
+
 Math.eval = function (expr, x = 1) {
     return Parser.evaluate(expr.replace("x", x));
 }
@@ -39,8 +42,6 @@ system.runInterval(() => {
     sel2[1] = world.scoreboard.getObjective("sel.y2");
     sel2[2] = world.scoreboard.getObjective("sel.z2");
 }, 8);
-
-const selTool = "Selecc";
 
 system.runInterval(() => {
     sel1[0] = world.scoreboard.getObjective("sel.x1");
@@ -144,8 +145,8 @@ world.beforeEvents.itemUseOn.subscribe((eventData) => {
 });
 
 //--------------------------------------------------------------------
-//--------------------COMMANDS__________________--------------------
-//-------------------------------------------------------------------
+//----------------------------COMMANDS--------------------------------
+//--------------------------------------------------------------------
 const cmdList = ["set", "noise", "shape", "shoot", "up", "distance", "age", "delete", "mode", "calc", "help"];
 
 async function matchCmd(cmd, sender) {
@@ -194,21 +195,16 @@ async function matchCmd(cmd, sender) {
             sender.setGameMode("spectator");
         });
     }
-    else if (cmd == "a") {
-        world.sendMessage("" + fun.noise(1, 3, 2));
-    }
-    /*else if (cmd[0] == "set" && cmd[1] != "loop" && cmd[3] == undefined) {
+    else if (cmd[0] == "s") {
         system.run(() => {
-            if (cmd[2]) overworld.runCommandAsync("fill " + x_1 + " " + y_1 + " " + z_1 + " " + x_2 + " " + y_2 + " " + z_2 + " " + cmd[1] + " " + cmd[2]);
-            else if (!cmd[2]) overworld.runCommandAsync("fill " + x_1 + " " + y_1 + " " + z_1 + " " + x_2 + " " + y_2 + " " + z_2 + " " + cmd[1]);
+            sender.setGameMode("survival");
         });
     }
-    else if (cmd[0] == "set" && cmd[1] != "loop" && cmd[2] != undefined && cmd[3] != undefined) {
+    else if (cmd[0] == "a") {
         system.run(() => {
-            if (cmd[3] == "replace") overworld.runCommandAsync("fill " + x_1 + " " + y_1 + " " + z_1 + " " + x_2 + " " + y_2 + " " + z_2 + " " + cmd[1] + " " + cmd[2] + " " + cmd[3] + " " + cmd[4]);
-            else overworld.runCommandAsync("fill " + x_1 + " " + y_1 + " " + z_1 + " " + x_2 + " " + y_2 + " " + z_2 + " " + cmd[1] + " " + cmd[2] + " " + cmd[3]);
+            sender.setGameMode("adventure");
         });
-    }*/
+    }
     else if (cmd[0] == "set") {
         system.run(() => {
             function filly(c1, c2 = "[]", c3 = "replace", c4 = "") {
@@ -378,10 +374,36 @@ async function matchCmd(cmd, sender) {
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
                     }, (Math.abs(vy_2 - vy_1) + m));
             }
-            /*else if (cmd[1] == "fillPerlin") {
-                fun.noiseSeed(Number(cmd[3]));
+
+            else if (cmd[1] == "fillPerlin") {
+
+                //1 = fillPerlin, 2 = Amplitude, 3 = frequency, 4 = Seed, 5 = n, 6 = block
+                //.noise fillPerlin 0.05 0.5 10 1 stone 3 air 1 stone
+                //.noise fillPerlin 0.36 0.5 10 2 mud_bricks 2 packed_mud 4 dirt_with_roots
+                fun.noiseSeed(Number(cmd[4]));
+
                 var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block, rand;
-                if (cmd[4])
+                var blocks = [], weight = [], pass = true;
+                var n = 5;
+                for (let j = 0; j < cmd.length - 5; j++) {
+                    if (j % 2 == 0) {
+                        if (Number.isInteger(Number(cmd[n])))
+                            weight.push(Number(cmd[n]));
+                        else {
+                            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"§cError: §rSyntax error.\"}]}");
+                            pass = false;
+                            break;
+                        }
+                    }
+                    else blocks.push(cmd[n]);
+                    n++;
+                }
+                for (let j = 0; j < weight.length; j++) {
+                    for (let k = 0; k < weight[j]; k++) {
+                        blocks.push(blocks[j]);
+                    }
+                }
+                if (cmd[5] && pass == true)
                     var tim = system.runInterval(() => {
                         if (i <= Math.abs(vx_2 - vx_1)) {
                             var j = 0;
@@ -389,49 +411,19 @@ async function matchCmd(cmd, sender) {
                             var tim2 = system.runInterval(() => {
                                 if (j <= Math.abs(vy_2 - vy_1)) {
                                     for (let k = 0; k <= Math.abs(vz_2 - vz_1); k++) {
-                                        rand = fun.noise(Number(cmd[2]) * (vx_1 + (i * Math.sign(vx_2 - vx_1))), Number(cmd[2]) * (vy_1 + (j * Math.sign(vy_2 - vy_1))), Number(cmd[2]) * (vz_1 + (k * Math.sign(vz_2 - vz_1))));
-                                        if (!cmd[6]) {
-                                            if (0.5 <= rand) block = cmd[4];
-                                            else block = cmd[5];
-                                        }
-                                        else if (cmd[6] != undefined && !cmd[7]) {
-                                            if (rand < 0.33) block = cmd[4];
-                                            else if (rand < 0.67 && rand >= 0.33) block = cmd[5];
-                                            else block = cmd[6];
-                                        }
-                                        else if (cmd[7] != undefined && !cmd[8]) {
-                                            if (rand < 0.25) block = cmd[4];
-                                            else if (rand < 0.5 && rand >= 0.25) block = cmd[5];
-                                            else if (rand < 0.75 && rand >= 0.5) block = cmd[6];
-                                            else block = cmd[7];
-                                        }
-                                        else if (cmd[8] != undefined && !cmd[9]) {
-                                            if (rand < 0.2) block = cmd[4];
-                                            else if (rand < 0.4 && rand >= 0.2) block = cmd[5];
-                                            else if (rand < 0.6 && rand >= 0.4) block = cmd[6];
-                                            else if (rand < 0.8 && rand >= 0.6) block = cmd[7];
-                                            else block = cmd[8];
-                                        }
-                                        else if (cmd[9] != undefined && !cmd[10]) {
-                                            if (rand < 0.17) block = cmd[4];
-                                            else if (rand < 0.33 && rand >= 0.17) block = cmd[5];
-                                            else if (rand < 0.5 && rand >= 0.33) block = cmd[6];
-                                            else if (rand < 0.67 && rand >= 0.5) block = cmd[7];
-                                            else if (rand < 0.83 && rand >= 0.67) block = cmd[8];
-                                            else block = cmd[9];
-                                        }
-                                        overworld.runCommand("setblock " + (vx_1 + (i * Math.sign(vx_2 - vx_1)) - Math.sign(vx_2 - vx_1)) + " " + (vy_1 + (j * Math.sign(vy_2 - vy_1))) + " " + (vz_1 + (k * Math.sign(vz_2 - vz_1))) + " " + block);
+                                        rand = Number(cmd[3]) * fun.noise(Number(cmd[2]) * (Math.min(vx_1, vx_2) + i - 1), Number(cmd[2]) * (Math.min(vy_1, vy_2) + j), Number(cmd[2]) * (Math.min(vz_1, vz_2) + k));
+                                        block = blocks[Math.floor(rand * blocks.length)];
+                                        overworld.runCommand("setblock " + (Math.min(vx_1, vx_2) + i - 1) + " " + (Math.min(vy_1, vy_2) + j) + " " + (Math.min(vz_1, vz_2) + k) + " " + block + " []");
                                     }
                                 } else system.clearRun(tim2);
                                 j++;
-                            }, 1);
+                            });
                         } else system.clearRun(tim);
                         i++;
                         if (world.gameRules.sendCommandFeedback == true)
                             overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
                     }, (Math.abs(vy_2 - vy_1) + m));
-                else world.sendMessage("[Error]: Maximum block types for noise fillPerlin is 6");
-            }*/
+            }
             else if (!cmd[1])
                 overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "noise <grass/gen> <amplitude> <frequency> <seed> <block(gen)>\"}]}");
         });
@@ -643,7 +635,7 @@ world.beforeEvents.itemUseOn.subscribe((eventData) => {
     }
 });
 world.afterEvents.itemUse.subscribe((eventData) => {
-    if (!eventData.source.hasTag("__tp") && eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == "Pointy") {
+    if (!eventData.source.hasTag("__tp") && eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == pointyTool) {
         var source = eventData.source;
         var x_1 = sel1[0].getScore(source), y_1 = sel1[1].getScore(source), z_1 = sel1[2].getScore(source), x_2 = sel2[0].getScore(source), y_2 = sel2[1].getScore(source), z_2 = sel2[2].getScore(source), vx1 = Math.min(x_1, x_2), vy1 = Math.min(y_1, y_2), vz1 = Math.min(z_1, z_2), vx2 = Math.max(x_1, x_2), vy2 = Math.max(y_1, y_2), vz2 = Math.max(z_1, z_2);
         var facX = -Math.round(Math.round(eventData.source.getRotation().x * 3 / 100) / 3), facY = -(Math.round(Math.round(eventData.source.getRotation().y * 4 / 100) / 4) - Math.abs(facX) * Math.round(Math.round(eventData.source.getRotation().y * 4 / 100) / 4)), cxz = 1 - Math.abs(facY);
@@ -695,7 +687,7 @@ world.afterEvents.itemUse.subscribe((eventData) => {
             }
         } catch { source.runCommand("title @s actionbar §cError"); }
     }
-    else if (eventData.source.hasTag("__tp") && eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == "Pointy") {
+    else if (eventData.source.hasTag("__tp") && eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == pointyTool) {
         try {
             var vx = 0, vy = 0, vz = 0;
             var blocc = eventData.source.getBlockFromViewDirection().block, fac = eventData.source.getBlockFromViewDirection().face;
