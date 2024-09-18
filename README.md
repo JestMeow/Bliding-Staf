@@ -188,7 +188,7 @@ There also exist sub-commands for more complex commands like set, noise, and sha
               .noise fillPerlin 0.05 0.5 10 1 stone 3 air 1 stone
               ```
               - let stone = s, air = a.
-              - $s < \frac{1}{3}, s > \frac{1}{6}, \:\:\frac{1}{3} \leq a \leq \frac{1}{6}$
+              - $s < \frac{1}{3}, s > \frac{1}{6},$ and $\frac{1}{3} \leq a \leq \frac{1}{6}$
               - We can treat it like a wave function. Ther'es an empty gap in the middle which, for this example, an air block. This result will give us a cave-like structure.
               - It can be used differently too, like it the following example, I created a floor pattern.
                 ```
