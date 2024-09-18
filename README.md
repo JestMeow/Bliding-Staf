@@ -172,7 +172,24 @@ There also exist sub-commands for more complex commands like set, noise, and sha
        4. keepStatic
           - Same as the fillStatic sub-command but only replaces air blocks.
           - Usage is the same.
-       5. fillPerlin (Unstable, do not use)
+       5. fillPerlin
+          - This one is a bit special. It fills the selected volume following a 3 dimensional perlin noise. With this, we can create generated caves, organic floor patterns, and more.
+          - Usage:
+            ```
+            .noise fillPerlin <amplitude> <frequency> <seed> <weight_1> <block_1> <weight_2> <block_2> ... <weight_n> <block_n>
+            ```
+            - This might seem weird that it uses weight, but the block weight depends on the range of the function.
+            - Examples:
+              ```
+              .noise fillPerlin 0.05 0.5 10 1 stone 3 air 1 stone
+              ```
+              - let stone = s, air = a.
+              - s < 1/3, s > 2/6, 1/3 <= a <= 2/3
+              - We can treat it like a wave function. Ther'es an empty gap in the middle which, for this example, an air block. This result will give us a cave-like structure.
+              - It can be used differently too, like it the following example, I created a floor pattern.
+                ```
+                .noise fillPerlin 0.36 0.5 10 2 mud_bricks 2 packed_mud 4 dirt_with_roots
+                ```
 
 
 2. shape
