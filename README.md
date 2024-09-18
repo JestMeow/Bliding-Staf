@@ -25,6 +25,7 @@ Once you have successfully imported the script in the form of a behaviour pack, 
 ## Initializing the script
 1. Place an anvil and get a stick
 2. Name the stick "Selecc"
+<br>
 "Selecc" will be like a wand that you can use to select points and volumes you want to edit.
 After doing so, you are now allowed to use commands such as the help command.
 
@@ -178,6 +179,9 @@ There also exist sub-commands for more complex commands like set, noise, and sha
             ```
             .noise fillPerlin <amplitude> <frequency> <seed> <weight_1> <block_1> <weight_2> <block_2> ... <weight_n> <block_n>
             ```
+            - Higher amplitude will give rough results while low amplitude gives smooth results.
+            - High frequency makes each "blob" appear more frequently while low frequency is the opposite.
+            - Seed can be anything. Can be used to seamlessly connect segments of noise.
             - This might seem weird that it uses weight, but the block weight depends on the range of the function.
             - Examples:
               ```
