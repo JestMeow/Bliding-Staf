@@ -9,10 +9,8 @@ Bliding Staf is an addon or script for Minecraft: Bedrock Edition that serves as
 - Addon can be downloaded on the builds folder.
 - Feel free to request changes. (I'm too lazy to optimize my code so ples do so for me :3)
 
-to do: finish a documentation.
 
-
-# Documentation (WIP)
+# Documentation
 Once you have successfully imported the script in the form of a behaviour pack, you can activate it to a world. Make sure that Beta's APIs is activated on the experiments.
 - I recommend enabling content log files and content log GUI while using this addon. That way, you can know if the addon is working or not.
 - If content log files and content log GUI is enabled, once loading the world, the script will greet you with a message of "Working...". If it did not greet you, then one of these factors might be the reason:
@@ -217,6 +215,7 @@ There also exist sub-commands for more complex commands like set, noise, and sha
            .shape cylinder <radius> <height> rot <rotX> <rotZ> <block permutation(Optional)> <placement type(Optional)>
            ```
 
-
-
-(to be continued lol)
+# Misc
+## Structure
+There exist a structure within this addon's files. This structure is a shulker box that contains items that are usually unobtainable even in the creative inventory
+- To get this structure, load a structure (using a structure block or using the /structure command) named "unobtainables"
