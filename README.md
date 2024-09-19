@@ -1,5 +1,5 @@
 # Bliding-Staf
-A script for Minecraft: Bedrock Edition that focuses on building efficiently.
+A worldedit-like addon for Minecraft: Bedrock Edition that focuses on building efficiently and effortlessly.
 
 ## About
 Bliding Staf is an addon or script for Minecraft: Bedrock Edition that serves as a tool for building efficiently and with minimal effort. This addon helps building by giving the player tools in the form of commands and items. This addon does not focus on terraforming but rather geometric shapes and some organic shapes.
