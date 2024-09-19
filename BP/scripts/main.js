@@ -113,8 +113,10 @@ system.runInterval(() => {
         sel2[0] = world.scoreboard.getObjective("sel.x2");
         sel2[1] = world.scoreboard.getObjective("sel.y2");
         sel2[2] = world.scoreboard.getObjective("sel.z2");
-        selLine();
-        selBox();
+        try {
+            selLine();
+            selBox();
+        } catch (err) { }
     }
 }, 16);
 world.beforeEvents.playerBreakBlock.subscribe((eventData) => {
