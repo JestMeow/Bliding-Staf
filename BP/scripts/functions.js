@@ -44,7 +44,24 @@ export function cos(x) {
     return Math.cos(x * Math.PI / 180);
 }
 //some shit
+//Math stuff
+/*export function rFact(num) {
+    if (num === 0) {
+        return 1;
+    }
+    else {
+        return num * rFact(num - 1);
+    }
+}
 
+export function bezier(t, n, p, bezierCoords = []) {
+    var bx = 0, by = 0;
+    for (let i = 0; i <= n; i++) {
+        bx += (rFact(n) / (rFact(i) * rFact(n - i))) * Math.pow(1 - t, n - i) * Math.pow(t, i) * p[i].x;
+        by += (rFact(n) / (rFact(i) * rFact(n - i))) * Math.pow(1 - t, n - i) * Math.pow(t, i) * p[i].y;
+    }
+    bezierCoords.push({ x: bx, y: by });
+}*/
 //noise (Not mine :3)
 
 const PERLIN_YWRAPB = 4
