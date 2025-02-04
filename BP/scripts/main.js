@@ -1,12 +1,25 @@
-console.warn("Working...");
+console.warn("Workingff...");
 
 import { world, system } from "@minecraft/server";
 import * as fun from "./functions.js";
 import { Parser } from "./parser.js";
 
-let overworld = world.getDimension("overworld");
-let entities = overworld.getEntities();
-let players = overworld.getPlayers();
+let overworld;
+let entities;
+let players;
+
+system.run(() => {
+    overworld = world.getDimension("overworld");
+    players = overworld.getPlayers();
+});
+
+//const maze = fun.generateMaze(8, 8);
+//console.warn(maze.map(row => row.join(" ")).join("\n"));
+//console.warn(maze[1][0]);
+
+//entities = overworld.getEntities();
+
+
 
 const selTool = "Selecc";
 const pointyTool = "Pointy";
@@ -600,6 +613,75 @@ async function matchCmd(cmd, sender) {
             });
         } else overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode <placement/pointy> <mode type>\"}]}");
     }
+
+
+
+
+
+
+
+    else if (cmd[0] == "gen") {
+        //gen 9, h 5
+        system.run(() => {
+            //overworld.runCommandAsync("fill " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " gold_block");
+            var maze = fun.generateMaze(Math.abs(x_2 - x_1), Math.abs(z_2 - z_1), Number(cmd[1]));
+            var i = 0;
+            var scale = Number(cmd[1]), height = Number(cmd[2]);
+            function rand(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function buildFeatures(i, j) {
+                overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 1) + " grass");
+                overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 1) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 1) + " iron_bars");
+                overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 2) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 2) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 2) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 2) + " azalea_leaves_flowered");
+            }
+            var tim = system.runInterval(() => {
+                if (i <= Math.abs(x_2 - x_1)) {
+                    //try {
+                    for (let j = 0; j <= Math.abs(z_2 - z_1); j++) {
+                        if (maze[i][j] == 1)
+                            overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j + scale / 2) + " " + (Math.min(x_1, x_2) + i - scale / 2) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j - scale / 2) + " stone");
+                        else if (maze[i][j] == 2 || maze[i][j] == 3) {
+                            overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 + 1) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j + scale / 2 + 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j - scale / 2 - 1) + " smooth_stone");
+                            if (Math.random() <= 0.85)
+                                fun.buildHouse(i, j, x_1, x_2, y_1, y_2, z_1, z_2, scale, height, sender.dimension, maze[i][j])
+                            else {
+                                buildFeatures(i, j);
+                            }
+                        }
+
+                    }
+                    //} catch (err) { }
+                    i++;
+                } else system.clearRun(tim);
+                if (world.gameRules.sendCommandFeedback == true)
+                    overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(y_2 - y_1) + 1)) / 100) + "%\"}]}");
+            }, 1);
+
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     else if (cmd[0] == "calc") {
         world.sendMessage("Jeff: " + Math.eval(cmd[1]));
     }
