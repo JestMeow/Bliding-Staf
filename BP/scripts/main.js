@@ -19,8 +19,6 @@ system.run(() => {
 
 //entities = overworld.getEntities();
 
-
-
 const selTool = "Selecc";
 const pointyTool = "Pointy";
 
@@ -139,21 +137,27 @@ world.beforeEvents.playerBreakBlock.subscribe((eventData) => {
                 sel1[0].setScore(eventData.player, Math.floor(eventData.block.location.x));
                 sel1[1].setScore(eventData.player, Math.floor(eventData.block.location.y));
                 sel1[2].setScore(eventData.player, Math.floor(eventData.block.location.z));
-                eventData.player.runCommandAsync("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 1 set to §d" + sel1[0].getScore(eventData.player) + ", " + sel1[1].getScore(eventData.player) + ", " + sel1[2].getScore(eventData.player) + "\\n§eDistance: " + Math.sqrt(Math.pow(sel2[0].getScore(eventData.player) - sel1[0].getScore(eventData.player), 2) + Math.pow(sel2[1].getScore(eventData.player) - sel1[1].getScore(eventData.player), 2) + Math.pow(sel2[2].getScore(eventData.player) - sel1[2].getScore(eventData.player), 2)) + "\"}]}");
-                eventData.player.runCommandAsync("playsound block.scaffolding.hit @a " + sel1[0].getScore(eventData.player) + " " + sel1[1].getScore(eventData.player) + " " + sel1[2].getScore(eventData.player));
+                eventData.player.runCommand("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 1 set to §d" + sel1[0].getScore(eventData.player) + ", " + sel1[1].getScore(eventData.player) + ", " + sel1[2].getScore(eventData.player) + "\\n§eDistance: " + Math.sqrt(Math.pow(sel2[0].getScore(eventData.player) - sel1[0].getScore(eventData.player), 2) + Math.pow(sel2[1].getScore(eventData.player) - sel1[1].getScore(eventData.player), 2) + Math.pow(sel2[2].getScore(eventData.player) - sel1[2].getScore(eventData.player), 2)) + "\"}]}");
+                eventData.player.runCommand("playsound block.scaffolding.hit @a " + sel1[0].getScore(eventData.player) + " " + sel1[1].getScore(eventData.player) + " " + sel1[2].getScore(eventData.player));
             });
             eventData.cancel = true;
         }
     } catch (err) { }
 });
-world.beforeEvents.itemUseOn.subscribe((eventData) => {
-    if (eventData.itemStack.nameTag == selTool && eventData.itemStack.typeId == "minecraft:stick") {
+
+//world.beforeEvents.itemUseOn.subscribe((eventData) => {
+// world.beforeEvents.playerInteractWithBlock
+
+world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
+    const item = eventData.itemStack;
+    if (!item) return;
+    if (item.nameTag == selTool && item.typeId == "minecraft:stick") {
         system.run(() => {
-            sel2[0].setScore(eventData.source, Math.floor(eventData.block.location.x));
-            sel2[1].setScore(eventData.source, Math.floor(eventData.block.location.y));
-            sel2[2].setScore(eventData.source, Math.floor(eventData.block.location.z));
-            eventData.source.runCommandAsync("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 2 set to §b" + Math.floor(eventData.block.location.x) + ", " + Math.floor(eventData.block.location.y) + ", " + Math.floor(eventData.block.location.z) + "\\n§eDistance: " + Math.sqrt(Math.pow(sel2[0].getScore(eventData.source) - sel1[0].getScore(eventData.source), 2) + Math.pow(sel2[1].getScore(eventData.source) - sel1[1].getScore(eventData.source), 2) + Math.pow(sel2[2].getScore(eventData.source) - sel1[2].getScore(eventData.source), 2)) + "\"}]}");
-            eventData.source.runCommandAsync("playsound block.scaffolding.break @a " + sel2[0].getScore(eventData.source) + " " + sel2[1].getScore(eventData.source) + " " + sel2[2].getScore(eventData.source));
+            sel2[0].setScore(eventData.player, Math.floor(eventData.block.location.x));
+            sel2[1].setScore(eventData.player, Math.floor(eventData.block.location.y));
+            sel2[2].setScore(eventData.player, Math.floor(eventData.block.location.z));
+            eventData.player.runCommand("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 2 set to §b" + Math.floor(eventData.block.location.x) + ", " + Math.floor(eventData.block.location.y) + ", " + Math.floor(eventData.block.location.z) + "\\n§eDistance: " + Math.sqrt(Math.pow(sel2[0].getScore(eventData.player) - sel1[0].getScore(eventData.player), 2) + Math.pow(sel2[1].getScore(eventData.player) - sel1[1].getScore(eventData.player), 2) + Math.pow(sel2[2].getScore(eventData.player) - sel1[2].getScore(eventData.player), 2)) + "\"}]}");
+            eventData.player.runCommand("playsound block.scaffolding.break @a " + sel2[0].getScore(eventData.player) + " " + sel2[1].getScore(eventData.player) + " " + sel2[2].getScore(eventData.player));
         });
         eventData.cancel = true;
     }
@@ -185,8 +189,8 @@ async function matchCmd(cmd, sender) {
                 sel1[1].setScore(sender, Math.floor(sender.location.y));
                 sel1[2].setScore(sender, Math.floor(sender.location.z));
                 system.run(() => {
-                    sender.runCommandAsync("tellraw @p {\"rawtext\":[{\"text\":\"Position 1 set to §d" + x_1 + ", " + y_1 + ", " + z_1 + "\"}]}");
-                    sender.runCommandAsync("playsound block.scaffolding.hit @a " + x_1 + " " + y_1 + " " + z_1);
+                    sender.runCommand("tellraw @p {\"rawtext\":[{\"text\":\"Position 1 set to §d" + x_1 + ", " + y_1 + ", " + z_1 + "\"}]}");
+                    sender.runCommand("playsound block.scaffolding.hit @a " + x_1 + " " + y_1 + " " + z_1);
                 });
             }
             else if (cmd[1] == "2") {
@@ -194,8 +198,8 @@ async function matchCmd(cmd, sender) {
                 sel2[1].setScore(sender, Math.floor(sender.location.y));
                 sel2[2].setScore(sender, Math.floor(sender.location.z));
                 system.run(() => {
-                    sender.runCommandAsync("tellraw @p {\"rawtext\":[{\"text\":\"Position 2 set to §b" + x_2 + ", " + y_2 + ", " + z_2 + "\"}]}");
-                    sender.runCommandAsync("playsound block.scaffolding.break @a " + x_2 + " " + y_2 + " " + z_2);
+                    sender.runCommand("tellraw @p {\"rawtext\":[{\"text\":\"Position 2 set to §b" + x_2 + ", " + y_2 + ", " + z_2 + "\"}]}");
+                    sender.runCommand("playsound block.scaffolding.break @a " + x_2 + " " + y_2 + " " + z_2);
                 });
             }
         });
@@ -223,7 +227,7 @@ async function matchCmd(cmd, sender) {
     else if (cmd[0] == "set") {
         system.run(() => {
             function filly(c1, c2 = "[]", c3 = "replace", c4 = "") {
-                overworld.runCommandAsync("fill " + x_1 + " " + (Math.min(y_1, y_2) + i) + " " + z_1 + " " + x_2 + " " + (Math.min(y_1, y_2) + i) + " " + z_2 + " " + c1 + " " + c2 + " " + c3 + " " + c4);
+                overworld.runCommand("fill " + x_1 + " " + (Math.min(y_1, y_2) + i) + " " + z_1 + " " + x_2 + " " + (Math.min(y_1, y_2) + i) + " " + z_2 + " " + c1 + " " + c2 + " " + c3 + " " + c4);
             }
             var i = 0;
             var tim = system.runInterval(() => {
@@ -252,26 +256,27 @@ async function matchCmd(cmd, sender) {
             facString = "Up";
         else if (facX == -1)
             facString = "Down";
-        sender.runCommandAsync("title @s actionbar Direction: §d" + facString);
+
 
         system.run(() => {
+            sender.runCommand("title @s actionbar Direction: §d" + facString);
             function stackySave(c2 = "") {
                 overworld.runCommand("structure save stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " " + Math.max(x_1, x_2) + " " + Math.max(y_1, y_2) + " " + Math.max(z_1, z_2) + " " + c2);
             }
             stackySave(cmd[2]);
             for (let i = 0; i <= cmd[1]; i++) {
                 if ((facY == 2 || facY == -2) && facX == 0)
-                    overworld.runCommandAsync("structure load stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + (Math.min(z_1, z_2) - (Math.abs(z_1 - z_2) + 1) * i));
+                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + (Math.min(z_1, z_2) - (Math.abs(z_1 - z_2) + 1) * i));
                 else if (facY == 0 && facX == 0)
-                    overworld.runCommandAsync("structure load stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + (Math.min(z_1, z_2) + (Math.abs(z_1 - z_2) + 1) * i));
+                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + (Math.min(z_1, z_2) + (Math.abs(z_1 - z_2) + 1) * i));
                 else if (facY == 1 && facX == 0)
-                    overworld.runCommandAsync("structure load stacky " + (Math.min(x_1, x_2) + (Math.abs(x_1 - x_2) + 1) * i) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2));
+                    overworld.runCommand("structure load stacky " + (Math.min(x_1, x_2) + (Math.abs(x_1 - x_2) + 1) * i) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2));
                 else if (facY == -1 && facX == 0)
-                    overworld.runCommandAsync("structure load stacky " + (Math.min(x_1, x_2) - (Math.abs(x_1 - x_2) + 1) * i) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2));
+                    overworld.runCommand("structure load stacky " + (Math.min(x_1, x_2) - (Math.abs(x_1 - x_2) + 1) * i) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2));
                 else if (facX == 1)
-                    overworld.runCommandAsync("structure load stacky " + Math.min(x_1, x_2) + " " + (Math.min(y_1, y_2) + (Math.abs(y_1 - y_2) + 1) * i) + " " + Math.min(z_1, z_2));
+                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + (Math.min(y_1, y_2) + (Math.abs(y_1 - y_2) + 1) * i) + " " + Math.min(z_1, z_2));
                 else if (facX == -1)
-                    overworld.runCommandAsync("structure load stacky " + Math.min(x_1, x_2) + " " + (Math.min(y_1, y_2) - (Math.abs(y_1 - y_2) + 1) * i) + " " + Math.min(z_1, z_2));
+                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + (Math.min(y_1, y_2) - (Math.abs(y_1 - y_2) + 1) * i) + " " + Math.min(z_1, z_2));
             }
         });
     }
@@ -440,7 +445,7 @@ async function matchCmd(cmd, sender) {
                     }, (Math.abs(vy_2 - vy_1) + m));
             }
             else if (!cmd[1])
-                overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "noise <grass/gen> <amplitude> <frequency> <seed> <block(gen)>\"}]}");
+                overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "noise <grass/gen> <amplitude> <frequency> <seed> <block(gen)>\"}]}");
         });
     }
     else if (cmd[0] == "shape") {
@@ -454,7 +459,7 @@ async function matchCmd(cmd, sender) {
             var r = Number(cmd[2]);
             if (cmd[2]) {
                 try {
-                    overworld.runCommandAsync("tp " + sender.nameTag + " " + px + " " + (py + r + 1) + " " + pz);
+                    overworld.runCommand("tp " + sender.nameTag + " " + px + " " + (py + r + 1) + " " + pz);
                     var tim = system.runInterval(() => {
                         if (i <= d) {
                             for (let j = 0; j <= d; j++) {
@@ -562,7 +567,7 @@ async function matchCmd(cmd, sender) {
             var i = 0;
             var tim = system.runInterval(() => {
                 if (i <= Math.abs(y_2 - y_1)) {
-                    overworld.runCommandAsync("fill " + x_1 + " " + (Math.min(y_1, y_2) + i) + " " + z_1 + " " + x_2 + " " + (Math.min(y_1, y_2) + i) + " " + z_2 + " air");
+                    overworld.runCommand("fill " + x_1 + " " + (Math.min(y_1, y_2) + i) + " " + z_1 + " " + x_2 + " " + (Math.min(y_1, y_2) + i) + " " + z_2 + " air");
                     i++;
                 } else system.clearRun(tim);
                 if (world.gameRules.sendCommandFeedback == true)
@@ -573,45 +578,46 @@ async function matchCmd(cmd, sender) {
     else if (cmd[0] == "mode") {
         if (cmd[1]) {
             system.run(() => {
-                try {
-                    if (cmd[1] == "flySpeed") {
-                        if (!world.scoreboard.getObjective("_flySpeed"))
-                            world.scoreboard.addObjective("_flySpeed");
+                if (cmd[1] == "flySpeed") {
+                    if (!world.scoreboard.getObjective("_flySpeed"))
+                        world.scoreboard.addObjective("_flySpeed");
+                    else
                         var flySpeed = world.scoreboard.getObjective("_flySpeed");
-                        if (Number(cmd[2]) > 1 && Number.isInteger(Number(cmd[2]))) {
-                            flySpeed.setScore(sender, Number(cmd[2]));
-                            overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Set fly speed to " + cmd[2] + "\"}]}");
-                        }
-                        else {
-                            flySpeed.removeParticipant(sender);
-                            overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Fly speed is now default\"}]}");
-                        }
+                    if (Number(cmd[2]) > 1 && Number.isInteger(Number(cmd[2]))) {
+                        flySpeed.setScore(sender, Number(cmd[2]));
+                        overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Set fly speed to " + cmd[2] + "\"}]}");
                     }
-                    if (cmd[1] == "placement" && cmd[2] == "force") {
-                        sender.addTag("_force");
-                        sender.removeTag("_replace");
-                    } else if (cmd[1] == "placement" && cmd[2] == "replace") {
-                        sender.addTag("_replace");
-                        sender.removeTag("_force");
-                    } else if (cmd[1] == "placement" && cmd[2] == "normal") {
-                        sender.removeTag("_force");
-                        sender.removeTag("_replace");
+                    else {
+                        flySpeed.removeParticipant(sender);
+                        overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Fly speed is now default\"}]}");
                     }
-                    else if (cmd[1] == "pointy" && cmd[2] == "move") {
-                        sender.removeTag("__tp");
-                    }
-                    else if (cmd[1] == "pointy" && cmd[2] == "teleport") {
-                        sender.addTag("__tp");
-                    }
-                    if (cmd[1] == "placement" && (cmd[2] == "force" || cmd[2] == "replace" || cmd[2] == "normal"))
-                        overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Updated placement mode\"}]}");
-                    else if (cmd[1] == "pointy" && (cmd[2] == "teleport" || cmd[2] == "move"))
-                        overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Updated pointy mode\"}]}");
-                    if (cmd[1] == "pointy" && !cmd[2]) overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode pointy <move/teleport>\"}]}");
-                    if (cmd[1] == "placement" && !cmd[2]) overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode placement <force/replace/normal>\"}]}");
-                } catch (err) { }
+                }
+                if (cmd[1] == "placement" && cmd[2] == "force") {
+                    sender.addTag("_force");
+                    sender.removeTag("_replace");
+                } else if (cmd[1] == "placement" && cmd[2] == "replace") {
+                    sender.addTag("_replace");
+                    sender.removeTag("_force");
+                } else if (cmd[1] == "placement" && cmd[2] == "normal") {
+                    sender.removeTag("_force");
+                    sender.removeTag("_replace");
+                }
+                else if (cmd[1] == "pointy" && cmd[2] == "move") {
+                    sender.removeTag("__tp");
+                }
+                else if (cmd[1] == "pointy" && cmd[2] == "teleport") {
+                    sender.addTag("__tp");
+                }
+                if (cmd[1] == "placement" && (cmd[2] == "force" || cmd[2] == "replace" || cmd[2] == "normal"))
+                    overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Updated placement mode\"}]}");
+                else if (cmd[1] == "pointy" && (cmd[2] == "teleport" || cmd[2] == "move"))
+                    overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"Updated pointy mode\"}]}");
+                if (cmd[1] == "pointy" && !cmd[2]) overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode pointy <move/teleport>\"}]}");
+                if (cmd[1] == "placement" && !cmd[2]) overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode placement <force/replace/normal>\"}]}");
             });
-        } else overworld.runCommandAsync("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode <placement/pointy> <mode type>\"}]}");
+        } else system.run(() => {
+            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "mode <placement/pointy> <mode type>\"}]}");
+        });
     }
 
 
@@ -623,7 +629,7 @@ async function matchCmd(cmd, sender) {
     else if (cmd[0] == "gen") {
         //gen 9, h 5
         system.run(() => {
-            //overworld.runCommandAsync("fill " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " gold_block");
+            //overworld.runCommand("fill " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " gold_block");
             var maze = fun.generateMaze(Math.abs(x_2 - x_1), Math.abs(z_2 - z_1), Number(cmd[1]));
             var i = 0;
             var scale = Number(cmd[1]), height = Number(cmd[2]);
@@ -698,7 +704,7 @@ world.beforeEvents.playerPlaceBlock.subscribe((eventData) => {
         eventData.cancel = true;
     }
 });
-world.beforeEvents.itemUseOn.subscribe((eventData) => {
+world.afterEvents.itemStartUseOn.subscribe((eventData) => {
     var loc = eventData.block, fac = eventData.blockFace;
     var vx = 0, vy = 0, vz = 0;
     if (eventData.source.hasTag("_force")) {
@@ -708,12 +714,12 @@ world.beforeEvents.itemUseOn.subscribe((eventData) => {
         else if (fac == "South") vz = 1;
         if (fac == "Down") vy = -1;
         else if (fac == "Up") vy = 1;
-        var p = eventData.source.runCommandAsync("setblock " + (loc.x + vx) + " " + (loc.y + vy) + " " + (loc.z + vz) + " " + eventData.itemStack.typeId);
+        var p = eventData.source.runCommand("setblock " + (loc.x + vx) + " " + (loc.y + vy) + " " + (loc.z + vz) + " " + eventData.itemStack.typeId);
         p.catch(() => { });
         return p;
     }
     if (eventData.source.hasTag("_replace")) {
-        var p = eventData.source.runCommandAsync("setblock " + loc.x + " " + loc.y + " " + loc.z + " " + eventData.itemStack.typeId);
+        var p = eventData.source.runCommand("setblock " + loc.x + " " + loc.y + " " + loc.z + " " + eventData.itemStack.typeId);
         p.catch(() => { });
         return p;
     }
@@ -741,9 +747,9 @@ world.afterEvents.itemUse.subscribe((eventData) => {
             if (facX != 0) {
                 system.run(() => {
                     overworld.runCommand("structure save my " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " false");
-                    overworld.runCommandAsync("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
-                    overworld.runCommandAsync("structure load my " + vx1 + " " + (vy1 + facX) + " " + vz1);
-                    overworld.runCommandAsync("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1 + 1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~~" + facX + "~");
+                    overworld.runCommand("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
+                    overworld.runCommand("structure load my " + vx1 + " " + (vy1 + facX) + " " + vz1);
+                    overworld.runCommand("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1 + 1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~~" + facX + "~");
                     sel1[1].addScore(source, facX);
                     sel2[1].addScore(source, facX);
                 });
@@ -752,18 +758,18 @@ world.afterEvents.itemUse.subscribe((eventData) => {
                 if (facY != -2 && facY != 2 && facY != 0)
                     system.run(() => {
                         overworld.runCommand("structure save my " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " false");
-                        overworld.runCommandAsync("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
-                        overworld.runCommandAsync("structure load my " + (vx1 + facY) + " " + vy1 + " " + vz1);
-                        overworld.runCommandAsync("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~" + facY + "~~");
+                        overworld.runCommand("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
+                        overworld.runCommand("structure load my " + (vx1 + facY) + " " + vy1 + " " + vz1);
+                        overworld.runCommand("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~" + facY + "~~");
                         sel1[0].addScore(source, facY);
                         sel2[0].addScore(source, facY);
                     });
                 else if (cxz < 2 && cxz > -2) {
                     system.run(() => {
                         overworld.runCommand("structure save my " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " false");
-                        overworld.runCommandAsync("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
-                        overworld.runCommandAsync("structure load my " + vx1 + " " + vy1 + " " + (vz1 + cxz));
-                        overworld.runCommandAsync("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~~~" + cxz);
+                        overworld.runCommand("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
+                        overworld.runCommand("structure load my " + vx1 + " " + vy1 + " " + (vz1 + cxz));
+                        overworld.runCommand("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~~~" + cxz);
                         sel1[2].addScore(source, cxz);
                         sel2[2].addScore(source, cxz);
                     });
@@ -782,7 +788,7 @@ world.afterEvents.itemUse.subscribe((eventData) => {
             if (fac == "Down") vy = -1;
             else if (fac == "Up") vy = 1;
             eventData.source.teleport({ x: blocc.x + vx, y: blocc.y + vy, z: blocc.z + vz });
-        } catch (err) { eventData.source.runCommandAsync("title @s actionbar Error: §cToo far") }
+        } catch (err) { eventData.source.runCommand("title @s actionbar Error: §cToo far") }
     }
 });
 system.runInterval(() => {
@@ -791,7 +797,8 @@ system.runInterval(() => {
             var flySpeed = world.scoreboard.getObjective("_flySpeed");
             if (flySpeed.getScore(player) > 1) {
                 var vewx = player.getViewDirection().x, vewz = player.getViewDirection().z;
-                player.applyKnockback(vewx, vewz, flySpeed.getScore(player) / 2, flySpeed.getScore(player) * player.getViewDirection().y / 2);
+                // player.applyKnockback(vewx, vewz, flySpeed.getScore(player) / 2, flySpeed.getScore(player) * player.getViewDirection().y / 2);
+                player.applyKnockback({ x: vewx * flySpeed.getScore(player) / 2, z: vewz * flySpeed.getScore(player) / 2 }, flySpeed.getScore(player) * player.getViewDirection().y / 2);
             }
         }
     }
