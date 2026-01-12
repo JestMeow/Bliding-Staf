@@ -32,7 +32,7 @@ export function stringToCommand(str) {
     var command = splt(str);
     return command;
 }
-//stuff to help doing stuff
+// Functions to make things easier
 
 export function distance(rx1, ry1, rz1, rx2, ry2, rz2) {
     return Math.sqrt(Math.pow(rx2 - rx1, 2) + Math.pow(ry2 - ry1, 2) + Math.pow(rz2 - rz1, 2));
@@ -43,28 +43,13 @@ export function sin(x) {
 export function cos(x) {
     return Math.cos(x * Math.PI / 180);
 }
-//some shit
-//Math stuff
-/*export function rFact(num) {
-    if (num === 0) {
-        return 1;
-    }
-    else {
-        return num * rFact(num - 1);
-    }
-}
 
-export function bezier(t, n, p, bezierCoords = []) {
-    var bx = 0, by = 0;
-    for (let i = 0; i <= n; i++) {
-        bx += (rFact(n) / (rFact(i) * rFact(n - i))) * Math.pow(1 - t, n - i) * Math.pow(t, i) * p[i].x;
-        by += (rFact(n) / (rFact(i) * rFact(n - i))) * Math.pow(1 - t, n - i) * Math.pow(t, i) * p[i].y;
-    }
-    bezierCoords.push({ x: bx, y: by });
-}*/
+// Random INT in range
 function rand(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+// City function
 
 export function buildHouse(i, j, x_1, x_2, y_1, y_2, z_1, z_2, scale = 9, h = 5, overworld, gridArray) {
     var wallPaletto = ["jungle_planks", "packed_mud", "cobblestone", "stone", "prismarine"];

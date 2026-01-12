@@ -1,8 +1,13 @@
-console.warn("Workingff...");
+console.warn("Workingffe...");
 
 import { world, system } from "@minecraft/server";
 import * as fun from "./functions.js";
 import { Parser } from "./parser.js";
+
+//Command imports
+import * as simple from "./commands/simple.js"
+import * as fills from "./commands/fills.js";
+import * as gen from "./commands/generation.js";
 
 let overworld;
 let entities;
@@ -13,11 +18,6 @@ system.run(() => {
     players = overworld.getPlayers();
 });
 
-//const maze = fun.generateMaze(8, 8);
-//console.warn(maze.map(row => row.join(" ")).join("\n"));
-//console.warn(maze[1][0]);
-
-//entities = overworld.getEntities();
 
 const selTool = "Selecc";
 const pointyTool = "Pointy";
@@ -26,8 +26,7 @@ Math.eval = function (expr, x = 1) {
     return Parser.evaluate(expr.replace("x", x));
 }
 
-let sel1 = [];
-let sel2 = [];
+let selScoreObj;
 
 function addScore(string) {
     if (!world.scoreboard.getObjective(string))
@@ -37,6 +36,9 @@ system.runInterval(() => {
     overworld = world.getDimension("overworld");
     entities = overworld.getEntities();
     players = overworld.getPlayers();
+
+    addScore("_flySpeed");
+
     addScore("sel.x1");
     addScore("sel.y1");
     addScore("sel.z1");
@@ -45,119 +47,109 @@ system.runInterval(() => {
     addScore("sel.y2");
     addScore("sel.z2");
 
-    sel1[0] = world.scoreboard.getObjective("sel.x1");
-    sel1[1] = world.scoreboard.getObjective("sel.y1");
-    sel1[2] = world.scoreboard.getObjective("sel.z1");
+    selScoreObj = {
+        x1: world.scoreboard.getObjective("sel.x1"),
+        y1: world.scoreboard.getObjective("sel.y1"),
+        z1: world.scoreboard.getObjective("sel.z1"),
 
-    sel2[0] = world.scoreboard.getObjective("sel.x2");
-    sel2[1] = world.scoreboard.getObjective("sel.y2");
-    sel2[2] = world.scoreboard.getObjective("sel.z2");
+        x2: world.scoreboard.getObjective("sel.x2"),
+        y2: world.scoreboard.getObjective("sel.y2"),
+        z2: world.scoreboard.getObjective("sel.z2")
+    };
 }, 8);
 
-system.runInterval(() => {
-    sel1[0] = world.scoreboard.getObjective("sel.x1");
-    sel1[1] = world.scoreboard.getObjective("sel.y1");
-    sel1[2] = world.scoreboard.getObjective("sel.z1");
+let selections;
 
-    sel2[0] = world.scoreboard.getObjective("sel.x2");
-    sel2[1] = world.scoreboard.getObjective("sel.y2");
-    sel2[2] = world.scoreboard.getObjective("sel.z2");
-    var x1, y1, z1, x2, y2, z2;
+system.runInterval(() => {
+
     for (let player of players) {
-        if (sel1[0].hasParticipant(player) && sel2[0].hasParticipant(player))
-            x1 = sel1[0].getScore(player), y1 = sel1[1].getScore(player), z1 = sel1[2].getScore(player), x2 = sel2[0].getScore(player), y2 = sel2[1].getScore(player), z2 = sel2[2].getScore(player);
+        if (selScoreObj.x1.hasParticipant(player) && selScoreObj.x2.hasParticipant(player))
+            selections = {
+                x1: selScoreObj.x1.getScore(player),
+                y1: selScoreObj.y1.getScore(player),
+                z1: selScoreObj.z1.getScore(player),
+                x2: selScoreObj.x2.getScore(player),
+                y2: selScoreObj.y2.getScore(player),
+                z2: selScoreObj.z2.getScore(player)
+            };
         function selBox() {
-            if (sel1[0].hasParticipant(player) && sel2[0].hasParticipant(player)) {
+            if (selScoreObj.x1.hasParticipant(player) && selScoreObj.x2.hasParticipant(player)) {
                 var c = [], d = [];
-                d[0] = Math.sign(x2 - x1 + 0.1);
-                d[1] = Math.sign(y2 - y1 - 0.1);
-                d[2] = Math.sign(z2 - z1 - 0.1);
+                d[0] = Math.sign(selections.x2 - selections.x1 + 0.1);
+                d[1] = Math.sign(selections.y2 - selections.y1 - 0.1);
+                d[2] = Math.sign(selections.z2 - selections.z1 - 0.1);
                 c[0] = 0.01;
                 c[1] = 0.01;
                 c[2] = 0.01;
-                if (x1 > x2)
+                if (selections.x1 > selections.x2)
                     c[0] = 1.01;
-                if (y1 < y2)
+                if (selections.y1 < selections.y2)
                     c[1] = 1.01;
-                if (z1 < z2)
+                if (selections.z1 < selections.z2)
                     c[2] = 1.01;
-                overworld.runCommand("particle minecraft:obsidian_glow_dust_particle " + (x1 + c[0]) + " " + (y1 + c[1] - d[1]) + " " + (z1 + c[2] - d[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x1 + c[0]) + " " + (y1 + c[1] - d[1]) + " " + (z1 + c[2] - d[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x1 + c[0]) + " " + (y2 + c[1]) + " " + (z1 + c[2] - d[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x1 + c[0]) + " " + (y1 + c[1] - d[1]) + " " + (z2 + c[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x1 + c[0]) + " " + (y2 + c[1]) + " " + (z2 + c[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x2 + c[0] + d[0]) + " " + (y1 + c[1] - d[1]) + " " + (z1 + c[2] - d[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x2 + c[0] + d[0]) + " " + (y2 + c[1]) + " " + (z1 + c[2] - d[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x2 + c[0] + d[0]) + " " + (y1 + c[1] - d[1]) + " " + (z2 + c[2]));
-                overworld.runCommand("particle minecraft:endrod " + (x2 + c[0] + d[0]) + " " + (y2 + c[1]) + " " + (z2 + c[2]));
+                // overworld.runCommand("particle minecraft:obsidian_glow_dust_particle " + (selections.x1 + c[0]) + " " + (selections.y1 + c[1] - d[1]) + " " + (selections.z1 + c[2] - d[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x1 + c[0]) + " " + (selections.y1 + c[1] - d[1]) + " " + (selections.z1 + c[2] - d[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x1 + c[0]) + " " + (selections.y2 + c[1]) + " " + (selections.z1 + c[2] - d[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x1 + c[0]) + " " + (selections.y1 + c[1] - d[1]) + " " + (selections.z2 + c[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x1 + c[0]) + " " + (selections.y2 + c[1]) + " " + (selections.z2 + c[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x2 + c[0] + d[0]) + " " + (selections.y1 + c[1] - d[1]) + " " + (selections.z1 + c[2] - d[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x2 + c[0] + d[0]) + " " + (selections.y2 + c[1]) + " " + (selections.z1 + c[2] - d[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x2 + c[0] + d[0]) + " " + (selections.y1 + c[1] - d[1]) + " " + (selections.z2 + c[2]));
+                overworld.runCommand("particle minecraft:endrod " + (selections.x2 + c[0] + d[0]) + " " + (selections.y2 + c[1]) + " " + (selections.z2 + c[2]));
             }
         }
         function selLine() {
             var m1 = 1, m2 = 1;
-            if (z2 - z1 != 0)
-                m1 = (x2 - x1) / (z2 - z1);
-            if (x2 - x1 != 0)
-                m1 = (y2 - y1) / (x2 - x1);
-            if (x2 - x1 != 0)
-                m2 = (z2 - z1) / (x2 - x1);
-            for (let i = 0; i <= Math.abs(x2 - x1) && Math.abs(x2 - x1) / 8 != 0; i += Math.abs(x2 - x1) / 8) {
-                if (x2 - x1 > 0 && z2 - z1 || x2 - x1 > 0 && y2 - y1 || x2 - x1 > 0 && x2 - x1)
-                    overworld.runCommand("particle minecraft:blue_flame_particle " + (x1 + i + 0.01) + " " + (y1 + m1 * i + 0.01) + " " + (z1 + m2 * i + 0.01));
-                else if (x2 - x1 < 0 && z2 - z1 || x2 - x1 < 0 && y2 - y1 || x2 - x1 < 0 && x2 - x1)
-                    overworld.runCommand("particle minecraft:blue_flame_particle " + (x1 + i + x2 - x1 + 0.01) + " " + (y1 + m1 * i + y2 - y1 + 0.01) + " " + (z1 + m2 * i + z2 - z1 + 0.01));
+            if (selections.z2 - selections.z1 != 0)
+                m1 = (selections.x2 - selections.x1) / (selections.z2 - selections.z1);
+            if (selections.x2 - selections.x1 != 0)
+                m1 = (selections.y2 - selections.y1) / (selections.x2 - selections.x1);
+            if (selections.x2 - selections.x1 != 0)
+                m2 = (selections.z2 - selections.z1) / (selections.x2 - selections.x1);
+            for (let i = 0; i <= Math.abs(selections.x2 - selections.x1) && Math.abs(selections.x2 - selections.x1) / 8 != 0; i += Math.abs(selections.x2 - selections.x1) / 8) {
+                if (selections.x2 - selections.x1 > 0 && selections.z2 - selections.z1 || selections.x2 - selections.x1 > 0 && selections.y2 - selections.y1 || selections.x2 - selections.x1 > 0 && selections.x2 - selections.x1)
+                    overworld.runCommand("particle minecraft:blue_flame_particle " + (selections.x1 + i + 0.01) + " " + (selections.y1 + m1 * i + 0.01) + " " + (selections.z1 + m2 * i + 0.01));
+                else if (selections.x2 - selections.x1 < 0 && selections.z2 - selections.z1 || selections.x2 - selections.x1 < 0 && selections.y2 - selections.y1 || selections.x2 - selections.x1 < 0 && selections.x2 - selections.x1)
+                    overworld.runCommand("particle minecraft:blue_flame_particle " + (selections.x1 + i + selections.x2 - selections.x1 + 0.01) + " " + (selections.y1 + m1 * i + selections.y2 - selections.y1 + 0.01) + " " + (selections.z1 + m2 * i + selections.z2 - selections.z1 + 0.01));
             }
         }
         overworld = world.getDimension("overworld");
         entities = overworld.getEntities();
-        addScore("sel.x1");
-        addScore("sel.y1");
-        addScore("sel.z1");
 
-        addScore("sel.x2");
-        addScore("sel.y2");
-        addScore("sel.z2");
-
-        sel1[0] = world.scoreboard.getObjective("sel.x1");
-        sel1[1] = world.scoreboard.getObjective("sel.y1");
-        sel1[2] = world.scoreboard.getObjective("sel.z1");
-
-        sel2[0] = world.scoreboard.getObjective("sel.x2");
-        sel2[1] = world.scoreboard.getObjective("sel.y2");
-        sel2[2] = world.scoreboard.getObjective("sel.z2");
         try {
             selLine();
             selBox();
-        } catch (err) { }
+        } catch (err) {
+            console.warn(err);
+        }
     }
 }, 16);
+
 world.beforeEvents.playerBreakBlock.subscribe((eventData) => {
     try {
         if (eventData.itemStack.nameTag == selTool && eventData.itemStack.typeId == "minecraft:stick") {
             system.run(() => {
-                sel1[0].setScore(eventData.player, Math.floor(eventData.block.location.x));
-                sel1[1].setScore(eventData.player, Math.floor(eventData.block.location.y));
-                sel1[2].setScore(eventData.player, Math.floor(eventData.block.location.z));
-                eventData.player.runCommand("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 1 set to §d" + sel1[0].getScore(eventData.player) + ", " + sel1[1].getScore(eventData.player) + ", " + sel1[2].getScore(eventData.player) + "\\n§eDistance: " + Math.sqrt(Math.pow(sel2[0].getScore(eventData.player) - sel1[0].getScore(eventData.player), 2) + Math.pow(sel2[1].getScore(eventData.player) - sel1[1].getScore(eventData.player), 2) + Math.pow(sel2[2].getScore(eventData.player) - sel1[2].getScore(eventData.player), 2)) + "\"}]}");
-                eventData.player.runCommand("playsound block.scaffolding.hit @a " + sel1[0].getScore(eventData.player) + " " + sel1[1].getScore(eventData.player) + " " + sel1[2].getScore(eventData.player));
+                selScoreObj.x1.setScore(eventData.player, Math.floor(eventData.block.location.x));
+                selScoreObj.y1.setScore(eventData.player, Math.floor(eventData.block.location.y));
+                selScoreObj.z1.setScore(eventData.player, Math.floor(eventData.block.location.z));
+                eventData.player.runCommand("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 1 set to §d" + selScoreObj.x1.getScore(eventData.player) + ", " + selScoreObj.y1.getScore(eventData.player) + ", " + selScoreObj.z1.getScore(eventData.player) + "\\n§eDistance: " + Math.sqrt(Math.pow(selScoreObj.x2.getScore(eventData.player) - selScoreObj.x1.getScore(eventData.player), 2) + Math.pow(selScoreObj.y2.getScore(eventData.player) - selScoreObj.y1.getScore(eventData.player), 2) + Math.pow(selScoreObj.z2.getScore(eventData.player) - selScoreObj.z1.getScore(eventData.player), 2)) + "\"}]}");
+                eventData.player.runCommand("playsound block.scaffolding.hit @a " + selScoreObj.x1.getScore(eventData.player) + " " + selScoreObj.y1.getScore(eventData.player) + " " + selScoreObj.z1.getScore(eventData.player));
             });
             eventData.cancel = true;
         }
     } catch (err) { }
 });
 
-//world.beforeEvents.itemUseOn.subscribe((eventData) => {
-// world.beforeEvents.playerInteractWithBlock
-
 world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
     const item = eventData.itemStack;
     if (!item) return;
     if (item.nameTag == selTool && item.typeId == "minecraft:stick") {
         system.run(() => {
-            sel2[0].setScore(eventData.player, Math.floor(eventData.block.location.x));
-            sel2[1].setScore(eventData.player, Math.floor(eventData.block.location.y));
-            sel2[2].setScore(eventData.player, Math.floor(eventData.block.location.z));
-            eventData.player.runCommand("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 2 set to §b" + Math.floor(eventData.block.location.x) + ", " + Math.floor(eventData.block.location.y) + ", " + Math.floor(eventData.block.location.z) + "\\n§eDistance: " + Math.sqrt(Math.pow(sel2[0].getScore(eventData.player) - sel1[0].getScore(eventData.player), 2) + Math.pow(sel2[1].getScore(eventData.player) - sel1[1].getScore(eventData.player), 2) + Math.pow(sel2[2].getScore(eventData.player) - sel1[2].getScore(eventData.player), 2)) + "\"}]}");
-            eventData.player.runCommand("playsound block.scaffolding.break @a " + sel2[0].getScore(eventData.player) + " " + sel2[1].getScore(eventData.player) + " " + sel2[2].getScore(eventData.player));
+            selScoreObj.x2.setScore(eventData.player, Math.floor(eventData.block.location.x));
+            selScoreObj.y2.setScore(eventData.player, Math.floor(eventData.block.location.y));
+            selScoreObj.z2.setScore(eventData.player, Math.floor(eventData.block.location.z));
+            eventData.player.runCommand("titleraw @p actionbar {\"rawtext\":[{\"text\":\"Position 2 set to §b" + Math.floor(eventData.block.location.x) + ", " + Math.floor(eventData.block.location.y) + ", " + Math.floor(eventData.block.location.z) + "\\n§eDistance: " + Math.sqrt(Math.pow(selScoreObj.x2.getScore(eventData.player) - selScoreObj.x1.getScore(eventData.player), 2) + Math.pow(selScoreObj.y2.getScore(eventData.player) - selScoreObj.y1.getScore(eventData.player), 2) + Math.pow(selScoreObj.z2.getScore(eventData.player) - selScoreObj.z1.getScore(eventData.player), 2)) + "\"}]}");
+            eventData.player.runCommand("playsound block.scaffolding.break @a " + selScoreObj.x2.getScore(eventData.player) + " " + selScoreObj.y2.getScore(eventData.player) + " " + selScoreObj.z2.getScore(eventData.player));
         });
         eventData.cancel = true;
     }
@@ -168,414 +160,105 @@ world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
 //--------------------------------------------------------------------
 const cmdList = ["set", "noise", "shape", "shoot", "up", "distance", "age", "delete", "mode", "calc", "help"];
 
-async function matchCmd(cmd, sender) {
-    var x_1 = sel1[0].getScore(sender), y_1 = sel1[1].getScore(sender), z_1 = sel1[2].getScore(sender), x_2 = sel2[0].getScore(sender), y_2 = sel2[1].getScore(sender), z_2 = sel2[2].getScore(sender);
-    if (cmd[0] == "help" || cmd[0] == "h" || cmd[0] == "?") {
-        system.run(() => {
-            sender.runCommand("say e");
-            sender.runCommand("tellraw @s {\"rawtext\":[{\"text\":\"§2-------Main Command list-------\"}]}");
-            for (let i = 0; i < cmdList.length; i++) {
-                var n;
-                if (i < 9)
-                    n = (i + 1) + "-";
-                else n = i + 1;
-                sender.runCommand("tellraw @s {\"rawtext\":[{\"text\":\"§7" + n + "> §r" + cmdList[i] + "\"}]}");
-            }
-        });
-    } else if (cmd[0] == "pos") {
-        system.run(() => {
-            if (cmd[1] == "1") {
-                sel1[0].setScore(sender, Math.floor(sender.location.x));
-                sel1[1].setScore(sender, Math.floor(sender.location.y));
-                sel1[2].setScore(sender, Math.floor(sender.location.z));
-                system.run(() => {
-                    sender.runCommand("tellraw @p {\"rawtext\":[{\"text\":\"Position 1 set to §d" + x_1 + ", " + y_1 + ", " + z_1 + "\"}]}");
-                    sender.runCommand("playsound block.scaffolding.hit @a " + x_1 + " " + y_1 + " " + z_1);
-                });
-            }
-            else if (cmd[1] == "2") {
-                sel2[0].setScore(sender, Math.floor(sender.location.x));
-                sel2[1].setScore(sender, Math.floor(sender.location.y));
-                sel2[2].setScore(sender, Math.floor(sender.location.z));
-                system.run(() => {
-                    sender.runCommand("tellraw @p {\"rawtext\":[{\"text\":\"Position 2 set to §b" + x_2 + ", " + y_2 + ", " + z_2 + "\"}]}");
-                    sender.runCommand("playsound block.scaffolding.break @a " + x_2 + " " + y_2 + " " + z_2);
-                });
-            }
-        });
-    }
-    else if (cmd[0] == "c") {
-        system.run(() => {
-            sender.setGameMode("creative");
-        });
-    }
-    else if (cmd[0] == "sp") {
-        system.run(() => {
-            sender.setGameMode("spectator");
-        });
-    }
-    else if (cmd[0] == "s") {
-        system.run(() => {
-            sender.setGameMode("survival");
-        });
-    }
-    else if (cmd[0] == "a") {
-        system.run(() => {
-            sender.setGameMode("adventure");
-        });
-    }
-    else if (cmd[0] == "set") {
-        system.run(() => {
-            function filly(c1, c2 = "[]", c3 = "replace", c4 = "") {
-                overworld.runCommand("fill " + x_1 + " " + (Math.min(y_1, y_2) + i) + " " + z_1 + " " + x_2 + " " + (Math.min(y_1, y_2) + i) + " " + z_2 + " " + c1 + " " + c2 + " " + c3 + " " + c4);
-            }
-            var i = 0;
-            var tim = system.runInterval(() => {
-                if (i <= Math.abs(y_2 - y_1)) {
-                    filly(cmd[1], cmd[2], cmd[3], cmd[4])
-                    i++;
-                } else system.clearRun(tim);
-                if (world.gameRules.sendCommandFeedback == true)
-                    overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(y_2 - y_1) + 1)) / 100) + "%\"}]}");
-            }, 1);
+let cmdSelections;
 
-        });
-    }
-    else if (cmd[0] == "stack") {
-        var facX = -Math.round(Math.round(sender.getRotation().x * 3 / 100) / 3), facY = -(Math.round(Math.round(sender.getRotation().y * 4 / 100) / 4) - Math.abs(facX) * Math.round(Math.round(sender.getRotation().y * 4 / 100) / 4)), cxz = 1 - Math.abs(facY);
-        var facString;
-        if ((facY == 2 || facY == -2) && facX == 0)
-            facString = "North";
-        else if (facY == 0 && facX == 0)
-            facString = "South";
-        else if (facY == 1 && facX == 0)
-            facString = "East";
-        else if (facY == -1 && facX == 0)
-            facString = "West";
-        else if (facX == 1)
-            facString = "Up";
-        else if (facX == -1)
-            facString = "Down";
+function matchCmd(cmd, sender) {
+    cmdSelections = {
+        x1: selScoreObj.x1.getScore(sender),
+        y1: selScoreObj.y1.getScore(sender),
+        z1: selScoreObj.z1.getScore(sender),
+
+        x2: selScoreObj.x2.getScore(sender),
+        y2: selScoreObj.y2.getScore(sender),
+        z2: selScoreObj.z2.getScore(sender)
+    };
+
+    // c, s, a, sp Chamge sender's gamemodes
+    simple.gamemodeCmd({
+        sender: sender,
+        cmd: cmd[0]
+    });
+
+    // help, h, ? => Gives list of commands
+    simple.helpCmd({
+        sender: sender,
+        cmd: cmd[0],
+        cmdList: cmdList
+    });
+
+    // pos => Set selection points
+    simple.posCmd({
+        sender: sender,
+        cmd: cmd[0],
+        number: cmd[1],
+        cmdSelections: cmdSelections,
+        selScoreObj: selScoreObj
+    });
+
+    // set => Fills selection with a given block type
+    fills.setCmd({
+        sender: sender,
+        cmd: cmd[0],
+        block: cmd[1],
+        blockState: cmd[2],
+        mode: cmd[3],
+        replacedBlock: cmd[4],
+        cmdSelections: cmdSelections
+    });
+
+    fills.delCmd({
+        cmd: cmd[0],
+        sender: sender,
+        cmdSelections: cmdSelections
+    });
+
+    // stack => Copies and pastes selection in a row
+    fills.stackCmd({
+        sender: sender,
+        cmd: cmd[0],
+        repetition: cmd[1],
+        includeEntities: cmd[2],
+        cmdSelections: cmdSelections
+    });
+
+    // noise => Noise-related commands, i.e. perlin noise and static generation
+    gen.noiseCmd({
+        sender: sender,
+        cmd: cmd,
+        cmdSelections: cmdSelections
+    });
+
+    // shape => Generate various 3D shapes
+    gen.shapeCmd({
+        sender: sender,
+        cmd: cmd
+    });
+
+    // shoot => "Shoots" a straight line where sender's facing
+    fills.shootCmd({
+        sender: sender,
+        cmd: cmd
+    });
+
+    // dis => Calculate the distance between selections 1 and 2
+    simple.disCmd({
+        cmd: cmd[0],
+        cmdSelections: cmdSelections
+    });
+
+    // age => Tells the current tick of the world
+    simple.ageCmd({
+        cmd: cmd[0]
+    });
+
+    // calc => Evaluates an expression.
+    fills.calcCmd({
+        cmd: cmd
+    });
 
 
-        system.run(() => {
-            sender.runCommand("title @s actionbar Direction: §d" + facString);
-            function stackySave(c2 = "") {
-                overworld.runCommand("structure save stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " " + Math.max(x_1, x_2) + " " + Math.max(y_1, y_2) + " " + Math.max(z_1, z_2) + " " + c2);
-            }
-            stackySave(cmd[2]);
-            for (let i = 0; i <= cmd[1]; i++) {
-                if ((facY == 2 || facY == -2) && facX == 0)
-                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + (Math.min(z_1, z_2) - (Math.abs(z_1 - z_2) + 1) * i));
-                else if (facY == 0 && facX == 0)
-                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + (Math.min(z_1, z_2) + (Math.abs(z_1 - z_2) + 1) * i));
-                else if (facY == 1 && facX == 0)
-                    overworld.runCommand("structure load stacky " + (Math.min(x_1, x_2) + (Math.abs(x_1 - x_2) + 1) * i) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2));
-                else if (facY == -1 && facX == 0)
-                    overworld.runCommand("structure load stacky " + (Math.min(x_1, x_2) - (Math.abs(x_1 - x_2) + 1) * i) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2));
-                else if (facX == 1)
-                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + (Math.min(y_1, y_2) + (Math.abs(y_1 - y_2) + 1) * i) + " " + Math.min(z_1, z_2));
-                else if (facX == -1)
-                    overworld.runCommand("structure load stacky " + Math.min(x_1, x_2) + " " + (Math.min(y_1, y_2) - (Math.abs(y_1 - y_2) + 1) * i) + " " + Math.min(z_1, z_2));
-            }
-        });
-    }
-    else if (cmd[0] == "noise") {
-        function perlin2d(c5, c6 = "[]", c7 = "replace", c8 = "") {
-            var i = 0;
-            var tim = system.runInterval(() => {
-                if (i <= Math.abs(x_2 - x_1)) {
-                    for (let j = 0; j <= Math.abs(z_2 - z_1); j++) {
-                        try {
-                            overworld.runCommand("fill " + (x_1 + (i * Math.sign(x_2 - x_1))) + " " + Math.min(y_1, y_2) + " " + (z_1 + (j * Math.sign(z_2 - z_1))) + " " + (x_1 + (i * Math.sign(x_2 - x_1))) + " " + (Math.min(y_1, y_2) + Number(cmd[2]) * fun.noise(Number(cmd[3]) * (x_1 + (i * Math.sign(x_2 - x_1))), Number(cmd[3]) * (z_1 + (j * Math.sign(z_2 - z_1))))) + " " + (z_1 + (j * Math.sign(z_2 - z_1))) + " " + c5 + " " + c6 + " " + c7 + " " + c8);
-                            if (cmd[1] == "grass")
-                                overworld.runCommand("setblock " + (x_1 + (i * Math.sign(x_2 - x_1))) + " " + (1 + Math.min(y_1, y_2) + Number(cmd[2]) * fun.noise(Number(cmd[3]) * (x_1 + (i * Math.sign(x_2 - x_1))), Number(cmd[3]) * (z_1 + (j * Math.sign(z_2 - z_1))))) + " " + (z_1 + (j * Math.sign(z_2 - z_1))) + " grass_block []");
-                        } catch (err) {
-                            world.sendMessage("Error: §c" + err);
-                            system.clearRun(tim);
-                            break;
-                        }
-                    }
-                    i++;
-                } else system.clearRun(tim);
-                if (world.gameRules.sendCommandFeedback == true)
-                    overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(x_2 - x_1) + 1)) / 100) + "%\"}]}");
-            }, 1);
-        }
-        fun.noiseSeed(Number(cmd[4]));
-        system.run(() => {
-            if (cmd[1] == "gen") {
-                perlin2d(cmd[5], cmd[6], cmd[7], cmd[8]);
-            }
-            else if (cmd[1] == "grass") {
-                perlin2d("dirt", cmd[6], cmd[7], cmd[8]);
-            }
-            else if (cmd[1] == "fillStatic") {
-                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block;
-                var blocks = [], weight = [], pass = true;
-                var n = 2;
-                for (let j = 0; j < cmd.length - 2; j++) {
-                    if (j % 2 == 0) {
-                        if (Number.isInteger(Number(cmd[n])))
-                            weight.push(Number(cmd[n]));
-                        else {
-                            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"§cError: §rSyntax error.\"}]}");
-                            pass = false;
-                            break;
-                        }
-                    }
-                    else blocks.push(cmd[n]);
-                    n++;
-                }
-                for (let j = 0; j < weight.length; j++) {
-                    for (let k = 0; k < weight[j]; k++) {
-                        blocks.push(blocks[j]);
-                    }
-                }
-                if (cmd[2] && pass == true)
-                    var tim = system.runInterval(() => {
-                        if (i <= Math.abs(vx_2 - vx_1)) {
-                            var j = 0;
-                            m = 0;
-                            var tim2 = system.runInterval(() => {
-                                if (j <= Math.abs(vy_2 - vy_1)) {
-                                    for (let k = 0; k <= Math.abs(vz_2 - vz_1); k++) {
-                                        block = blocks[Math.floor(Math.random() * blocks.length)];
-                                        overworld.runCommand("setblock " + (Math.min(vx_1, vx_2) + i - 1) + " " + (Math.min(vy_1, vy_2) + j) + " " + (Math.min(vz_1, vz_2) + k) + " " + block);
-                                    }
-                                } else system.clearRun(tim2);
-                                j++;
-                            });
-                        } else system.clearRun(tim);
-                        i++;
-                        if (world.gameRules.sendCommandFeedback == true)
-                            overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
-                    }, (Math.abs(vy_2 - vy_1) + m));
-            }
-            else if (cmd[1] == "keepStatic") {
-                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block;
-                var blocks = [], weight = [], pass = true;
-                var n = 2;
-                for (let j = 0; j < cmd.length - 2; j++) {
-                    if (j % 2 == 0) {
-                        if (Number.isInteger(Number(cmd[n])))
-                            weight.push(Number(cmd[n]));
-                        else {
-                            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"§cError: §rSyntax error.\"}]}");
-                            pass = false;
-                            break;
-                        }
-                    }
-                    else blocks.push(cmd[n]);
-                    n++;
-                }
-                for (let j = 0; j < weight.length; j++) {
-                    for (let k = 0; k < weight[j]; k++) {
-                        blocks.push(blocks[j]);
-                    }
-                }
-                if (cmd[2] && pass == true)
-                    var tim = system.runInterval(() => {
-                        if (i <= Math.abs(vx_2 - vx_1)) {
-                            var j = 0;
-                            m = 0;
-                            var tim2 = system.runInterval(() => {
-                                if (j <= Math.abs(vy_2 - vy_1)) {
-                                    for (let k = 0; k <= Math.abs(vz_2 - vz_1); k++) {
-                                        block = blocks[Math.floor(Math.random() * blocks.length)];
-                                        overworld.runCommand("setblock " + (Math.min(vx_1, vx_2) + i - 1) + " " + (Math.min(vy_1, vy_2) + j) + " " + (Math.min(vz_1, vz_2) + k) + " " + block + " [] keep");
-                                    }
-                                } else system.clearRun(tim2);
-                                j++;
-                            });
-                        } else system.clearRun(tim);
-                        i++;
-                        if (world.gameRules.sendCommandFeedback == true)
-                            overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
-                    }, (Math.abs(vy_2 - vy_1) + m));
-            }
-
-            else if (cmd[1] == "fillPerlin") {
-
-                //1 = fillPerlin, 2 = Amplitude, 3 = frequency, 4 = Seed, 5 = n, 6 = block
-                //.noise fillPerlin 0.05 0.5 10 1 stone 3 air 1 stone
-                //.noise fillPerlin 0.36 0.5 10 2 mud_bricks 2 packed_mud 4 dirt_with_roots
-                fun.noiseSeed(Number(cmd[4]));
-
-                var i = 0, m = 2, vx_1 = x_1, vy_1 = y_1, vz_1 = z_1, vx_2 = x_2, vy_2 = y_2, vz_2 = z_2, block, rand;
-                var blocks = [], weight = [], pass = true;
-                var n = 5;
-                for (let j = 0; j < cmd.length - 5; j++) {
-                    if (j % 2 == 0) {
-                        if (Number.isInteger(Number(cmd[n])))
-                            weight.push(Number(cmd[n]));
-                        else {
-                            overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"§cError: §rSyntax error.\"}]}");
-                            pass = false;
-                            break;
-                        }
-                    }
-                    else blocks.push(cmd[n]);
-                    n++;
-                }
-                for (let j = 0; j < weight.length; j++) {
-                    for (let k = 0; k < weight[j]; k++) {
-                        blocks.push(blocks[j]);
-                    }
-                }
-                if (cmd[5] && pass == true)
-                    var tim = system.runInterval(() => {
-                        if (i <= Math.abs(vx_2 - vx_1)) {
-                            var j = 0;
-                            m = 0;
-                            var tim2 = system.runInterval(() => {
-                                if (j <= Math.abs(vy_2 - vy_1)) {
-                                    for (let k = 0; k <= Math.abs(vz_2 - vz_1); k++) {
-                                        rand = Number(cmd[3]) * fun.noise(Number(cmd[2]) * (Math.min(vx_1, vx_2) + i - 1), Number(cmd[2]) * (Math.min(vy_1, vy_2) + j), Number(cmd[2]) * (Math.min(vz_1, vz_2) + k));
-                                        block = blocks[Math.floor(rand * blocks.length)];
-                                        overworld.runCommand("setblock " + (Math.min(vx_1, vx_2) + i - 1) + " " + (Math.min(vy_1, vy_2) + j) + " " + (Math.min(vz_1, vz_2) + k) + " " + block + " []");
-                                    }
-                                } else system.clearRun(tim2);
-                                j++;
-                            });
-                        } else system.clearRun(tim);
-                        i++;
-                        if (world.gameRules.sendCommandFeedback == true)
-                            overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(vx_2 - vx_1) + 2)) / 100) + "%\"}]}");
-                    }, (Math.abs(vy_2 - vy_1) + m));
-            }
-            else if (!cmd[1])
-                overworld.runCommand("tellraw " + sender.name + " {\"rawtext\":[{\"text\":\"" + fun.pref + "noise <grass/gen> <amplitude> <frequency> <seed> <block(gen)>\"}]}");
-        });
-    }
-    else if (cmd[0] == "shape") {
-        function shapeSetblock(c3, c4 = "[]", c5 = "replace", j, k) {
-            overworld.runCommand("setblock " + (px - r + i) + " " + (py - r + j) + " " + (pz - r + k) + " " + c3 + " " + c4 + " " + c5);
-        }
-        if (cmd[1] == "sphere") {
-            var i = 0;
-            var px = Math.floor(sender.location.x), py = Math.floor(sender.location.y), pz = (sender.location.z);
-            var d = 2 * Number(cmd[2]);
-            var r = Number(cmd[2]);
-            if (cmd[2]) {
-                try {
-                    overworld.runCommand("tp " + sender.nameTag + " " + px + " " + (py + r + 1) + " " + pz);
-                    var tim = system.runInterval(() => {
-                        if (i <= d) {
-                            for (let j = 0; j <= d; j++) {
-                                for (let k = 0; k <= d; k++) {
-                                    if (fun.distance(px, py, pz, px - r + i, py - r + j, pz - r + k) <= r) {
-                                        shapeSetblock(cmd[3], cmd[4], cmd[5], j, k);
-                                    } else continue;
-                                }
-                            }
-                        } else system.clearRun(tim);
-                        i++;
-                        if (world.gameRules.sendCommandFeedback == true)
-                            overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (d + 2)) / 100) + "%\"}]}");
-                    });
-                } catch (e) { world.sendMessage("[Error]: " + fun.pref + "shape <shape> <cmd[2]> <cmd[3]> <cmd[4]>"); }
-            }
-        }
-        else if (cmd[1] == "cone" || cmd[1] == "cylinder") {
-            function genShape(cb = new function () { }) {
-                var tim = system.runInterval(() => {
-                    if (i <= Math.max(h, r)) {
-                        cb();
-                    } else {
-                        blocc = V;
-                        system.clearRun(tim);
-                    }
-                    i++;
-                    if (world.gameRules.sendCommandFeedback == true)
-                        overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * blocc / V) / 100) + "%\"}]}");
-                });
-            }
-            function shaperSetBlock(c7, c8 = "[]", c9 = "replace", c10 = "", j, k) {
-                overworld.runCommand("setblock " + (px + i) + " " + (py + j) + " " + (pz + k) + " " + c7 + " " + c8 + " " + c9 + " " + c10);
-            }
-            if (cmd[1] == "cone") {
-                var px = Math.floor(sender.location.x), py = Math.floor(sender.location.y), pz = (sender.location.z);
-                var d = 2 * Number(cmd[2]);
-                var r = Number(cmd[2]);
-                var h = Number(cmd[3]);
-                var blocc = 0;
-                var i = -Math.max(h, r);
-                var ax, ay, az;
-                var V = Math.ceil(Math.PI * r * r * h / 3) + 2;
-                genShape(function () {
-                    for (let j = -Math.max(h, r); j <= Math.max(h, r); j += Math.sign(Math.max(h, r))) {
-                        for (let k = -Math.max(h, r); k <= Math.max(h, r); k++) {
-                            ax = i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.sin(Number(cmd[5]));
-                            ay = (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]));
-                            az = k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6]));
-                            if (Math.pow(ax, 2) + Math.pow(az, 2) - (r * r * Math.pow(ay - h, 2)) / (h * h) <= 0 && ay <= h && ay >= 0) {
-                                blocc++;
-                                shaperSetBlock(cmd[7], cmd[8], cmd[9], cmd[10], j, k);
-                            }
-                        }
-                    }
-                });
-            }
-            else if (cmd[1] == "cylinder") {
-                var px = Math.floor(sender.location.x), py = Math.floor(sender.location.y), pz = (sender.location.z);
-                var d = 2 * Number(cmd[2]);
-                var r = Number(cmd[2]);
-                var h = Number(cmd[3]);
-                var blocc = 0;
-                var i = -Math.max(h, r);
-                var ax, ay, az;
-                var V = Math.ceil(Math.PI * r * r * h) + 2;
-                genShape(function () {
-                    for (let j = -Math.max(h, r); j <= Math.max(h, r); j += Math.sign(Math.max(h, r))) {
-                        for (let k = -Math.max(h, r); k <= Math.max(h, r); k++) {
-                            ax = i * fun.cos(Number(cmd[5])) + (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.sin(Number(cmd[5]));
-                            ay = (j * fun.cos(Number(cmd[6])) - k * fun.sin(Number(cmd[6]))) * fun.cos(Number(cmd[5])) - i * fun.sin(Number(cmd[5]));
-                            az = k * fun.cos(Number(cmd[6])) + j * fun.sin(Number(cmd[6]));
-                            if (Math.pow(ax, 2) + Math.pow(az, 2) - (r * r) <= 0 && ay <= h && ay >= 0) {
-                                blocc++;
-                                shaperSetBlock(cmd[7], cmd[8], cmd[9], cmd[10], j, k);
-                            } else continue;
-                        }
-                    }
-                });
-            }
-        }
-    }
-    else if (cmd[0] == "shoot" && cmd[1] != undefined) {
-        system.run(() => {
-            if (cmd[4]) {
-                for (let i = 0; i <= Math.floor(cmd[1]); i++) {
-                    sender.runCommand("execute as @s at @s positioned ~~1.65~ run setblock ^^^" + i + " " + cmd[2] + " " + cmd[3] + " " + cmd[4]);
-                }
-            }
-            else if (!cmd[4]) {
-                for (let i = 0; i <= Math.floor(cmd[1]); i++) {
-                    sender.runCommand("execute as @s at @s positioned ~~1.65~ run setblock ^^^" + i + " " + cmd[2] + " " + cmd[3]);
-                }
-            }
-        });
-    }
-    else if (cmd[0] == "dis" || cmd[0] == "distance") {
-        world.sendMessage("Distance: §e" + Math.sqrt(Math.pow(x_2 - x_1, 2) + Math.pow(y_2 - y_1, 2) + Math.pow(z_2 - z_1, 2)));
-    }
-    else if (cmd[0] == "age") {
-        world.sendMessage("Current tick: §b" + system.currentTick);
-    }
-    else if (cmd[0] == "del" || cmd[0] == "delete") {
-        system.run(() => {
-            var i = 0;
-            var tim = system.runInterval(() => {
-                if (i <= Math.abs(y_2 - y_1)) {
-                    overworld.runCommand("fill " + x_1 + " " + (Math.min(y_1, y_2) + i) + " " + z_1 + " " + x_2 + " " + (Math.min(y_1, y_2) + i) + " " + z_2 + " air");
-                    i++;
-                } else system.clearRun(tim);
-                if (world.gameRules.sendCommandFeedback == true)
-                    overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(y_2 - y_1) + 1)) / 100) + "%\"}]}");
-            }, 1);
-        });
-    }
-    else if (cmd[0] == "mode") {
+    // mode => Changes mode of something
+    if (cmd[0] == "mode") {
         if (cmd[1]) {
             system.run(() => {
                 if (cmd[1] == "flySpeed") {
@@ -626,71 +309,51 @@ async function matchCmd(cmd, sender) {
 
 
 
-    else if (cmd[0] == "gen") {
-        //gen 9, h 5
-        system.run(() => {
-            //overworld.runCommand("fill " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " gold_block");
-            var maze = fun.generateMaze(Math.abs(x_2 - x_1), Math.abs(z_2 - z_1), Number(cmd[1]));
-            var i = 0;
-            var scale = Number(cmd[1]), height = Number(cmd[2]);
-            function rand(min, max) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
+    // else if (cmd[0] == "gen") {
+    //     //gen 9, h 5
+    //     system.run(() => {
+    //         //overworld.runCommand("fill " + Math.min(x_1, x_2) + " " + Math.min(y_1, y_2) + " " + Math.min(z_1, z_2) + " gold_block");
+    //         var maze = fun.generateMaze(Math.abs(x_2 - x_1), Math.abs(z_2 - z_1), Number(cmd[1]));
+    //         var i = 0;
+    //         var scale = Number(cmd[1]), height = Number(cmd[2]);
+    //         function rand(min, max) {
+    //             return Math.floor(Math.random() * (max - min + 1)) + min;
+    //         }
 
-            function buildFeatures(i, j) {
-                overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 1) + " grass");
-                overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 1) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 1) + " iron_bars");
-                overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 2) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 2) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 2) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 2) + " azalea_leaves_flowered");
-            }
-            var tim = system.runInterval(() => {
-                if (i <= Math.abs(x_2 - x_1)) {
-                    //try {
-                    for (let j = 0; j <= Math.abs(z_2 - z_1); j++) {
-                        if (maze[i][j] == 1)
-                            overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j + scale / 2) + " " + (Math.min(x_1, x_2) + i - scale / 2) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j - scale / 2) + " stone");
-                        else if (maze[i][j] == 2 || maze[i][j] == 3) {
-                            overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 + 1) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j + scale / 2 + 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j - scale / 2 - 1) + " smooth_stone");
-                            if (Math.random() <= 0.85)
-                                fun.buildHouse(i, j, x_1, x_2, y_1, y_2, z_1, z_2, scale, height, sender.dimension, maze[i][j])
-                            else {
-                                buildFeatures(i, j);
-                            }
-                        }
+    //         function buildFeatures(i, j) {
+    //             overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 1) + " grass");
+    //             overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 1) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 1) + " iron_bars");
+    //             overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 - 2) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j + scale / 2 - 2) + " " + (Math.min(x_1, x_2) + i - scale / 2 + 2) + " " + (Math.min(y_1, y_2) + 2) + " " + (Math.min(z_1, z_2) + j - scale / 2 + 2) + " azalea_leaves_flowered");
+    //         }
+    //         var tim = system.runInterval(() => {
+    //             if (i <= Math.abs(x_2 - x_1)) {
+    //                 //try {
+    //                 for (let j = 0; j <= Math.abs(z_2 - z_1); j++) {
+    //                     if (maze[i][j] == 1)
+    //                         overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j + scale / 2) + " " + (Math.min(x_1, x_2) + i - scale / 2) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j - scale / 2) + " stone");
+    //                     else if (maze[i][j] == 2 || maze[i][j] == 3) {
+    //                         overworld.runCommand("fill " + (Math.min(x_1, x_2) + i + scale / 2 + 1) + " " + (Math.min(y_1, y_2)) + " " + (Math.min(z_1, z_2) + j + scale / 2 + 1) + " " + (Math.min(x_1, x_2) + i - scale / 2 - 1) + " " + (Math.min(y_1, y_2) + 1) + " " + (Math.min(z_1, z_2) + j - scale / 2 - 1) + " smooth_stone");
+    //                         if (Math.random() <= 0.85)
+    //                             fun.buildHouse(i, j, x_1, x_2, y_1, y_2, z_1, z_2, scale, height, sender.dimension, maze[i][j])
+    //                         else {
+    //                             buildFeatures(i, j);
+    //                         }
+    //                     }
 
-                    }
-                    //} catch (err) { }
-                    i++;
-                } else system.clearRun(tim);
-                if (world.gameRules.sendCommandFeedback == true)
-                    overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(y_2 - y_1) + 1)) / 100) + "%\"}]}");
-            }, 1);
+    //                 }
+    //                 //} catch (err) { }
+    //                 i++;
+    //             } else system.clearRun(tim);
+    //             if (world.gameRules.sendCommandFeedback == true)
+    //                 overworld.runCommand("titleraw " + sender.name + " actionbar {\"rawtext\":[{\"text\":\"Progress: §e" + (Math.round(10000 * i / (Math.abs(y_2 - y_1) + 1)) / 100) + "%\"}]}");
+    //         }, 1);
 
-        });
-    }
-
-
+    //     });
+    // }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    else if (cmd[0] == "calc") {
-        world.sendMessage("Jeff: " + Math.eval(cmd[1]));
-    }
 }
 world.beforeEvents.chatSend.subscribe((eventData) => {
     if (eventData.message.substr(0, 1) == fun.pref) {
@@ -704,99 +367,122 @@ world.beforeEvents.playerPlaceBlock.subscribe((eventData) => {
         eventData.cancel = true;
     }
 });
-world.afterEvents.itemStartUseOn.subscribe((eventData) => {
-    var loc = eventData.block, fac = eventData.blockFace;
-    var vx = 0, vy = 0, vz = 0;
-    if (eventData.source.hasTag("_force")) {
+world.beforeEvents.playerInteractWithBlock.subscribe((eventData) => {
+    let loc = eventData.block, fac = eventData.blockFace;
+    let vx = 0, vy = 0, vz = 0;
+    if (eventData.player.hasTag("_force")) {
+        eventData.cancel = true;
         if (fac == "West") vx = -1;
         else if (fac == "East") vx = 1;
         if (fac == "North") vz = -1;
         else if (fac == "South") vz = 1;
         if (fac == "Down") vy = -1;
         else if (fac == "Up") vy = 1;
-        var p = eventData.source.runCommand("setblock " + (loc.x + vx) + " " + (loc.y + vy) + " " + (loc.z + vz) + " " + eventData.itemStack.typeId);
-        p.catch(() => { });
-        return p;
+
+        system.run(() => {
+            eventData.player.runCommand("setblock " + (loc.x + vx) + " " + (loc.y + vy) + " " + (loc.z + vz) + " " + eventData.itemStack.typeId);
+        });
     }
-    if (eventData.source.hasTag("_replace")) {
-        var p = eventData.source.runCommand("setblock " + loc.x + " " + loc.y + " " + loc.z + " " + eventData.itemStack.typeId);
-        p.catch(() => { });
-        return p;
+    if (eventData.player.hasTag("_replace")) {
+        system.run(() => {
+            eventData.player.runCommand("setblock " + loc.x + " " + loc.y + " " + loc.z + " " + eventData.itemStack.typeId);
+        });
     }
 });
 world.afterEvents.itemUse.subscribe((eventData) => {
-    if (!eventData.source.hasTag("__tp") && eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == pointyTool) {
-        var source = eventData.source;
-        var x_1 = sel1[0].getScore(source), y_1 = sel1[1].getScore(source), z_1 = sel1[2].getScore(source), x_2 = sel2[0].getScore(source), y_2 = sel2[1].getScore(source), z_2 = sel2[2].getScore(source), vx1 = Math.min(x_1, x_2), vy1 = Math.min(y_1, y_2), vz1 = Math.min(z_1, z_2), vx2 = Math.max(x_1, x_2), vy2 = Math.max(y_1, y_2), vz2 = Math.max(z_1, z_2);
-        var facX = -Math.round(Math.round(eventData.source.getRotation().x * 3 / 100) / 3), facY = -(Math.round(Math.round(eventData.source.getRotation().y * 4 / 100) / 4) - Math.abs(facX) * Math.round(Math.round(eventData.source.getRotation().y * 4 / 100) / 4)), cxz = 1 - Math.abs(facY);
-        var facString;
-        if ((facY == 2 || facY == -2) && facX == 0)
-            facString = "North";
-        else if (facY == 0 && facX == 0)
-            facString = "South";
-        else if (facY == 1 && facX == 0)
-            facString = "East";
-        else if (facY == -1 && facX == 0)
-            facString = "West";
-        else if (facX == 1)
-            facString = "Up";
-        else if (facX == -1)
-            facString = "Down";
-        try {
-            source.runCommand("title @s actionbar Direction: §d" + facString);
-            if (facX != 0) {
-                system.run(() => {
-                    overworld.runCommand("structure save my " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " false");
-                    overworld.runCommand("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
-                    overworld.runCommand("structure load my " + vx1 + " " + (vy1 + facX) + " " + vz1);
-                    overworld.runCommand("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1 + 1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~~" + facX + "~");
-                    sel1[1].addScore(source, facX);
-                    sel2[1].addScore(source, facX);
-                });
-            }
-            else if (facX == 0) {
-                if (facY != -2 && facY != 2 && facY != 0)
+    if (eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == pointyTool) {
+        let source = eventData.source;
+        let selectionPos = {
+            x1: selScoreObj.x1.getScore(source),
+            y1: selScoreObj.y1.getScore(source),
+            z1: selScoreObj.z1.getScore(source),
+
+            x2: selScoreObj.x2.getScore(source),
+            y2: selScoreObj.y2.getScore(source),
+            z2: selScoreObj.z2.getScore(source)
+        };
+
+        let vcoords = {
+            x1: Math.min(selectionPos.x1, selectionPos.x2),
+            y1: Math.min(selectionPos.y1, selectionPos.y2),
+            z1: Math.min(selectionPos.z1, selectionPos.z2),
+
+            x2: Math.max(selectionPos.x1, selectionPos.x2),
+            y2: Math.max(selectionPos.y1, selectionPos.y2),
+            z2: Math.max(selectionPos.z1, selectionPos.z2)
+        };
+
+        if (!eventData.source.hasTag("__tp")) {
+            let facX = -Math.round(Math.round(eventData.source.getRotation().x * 3 / 100) / 3), facY = -(Math.round(Math.round(eventData.source.getRotation().y * 4 / 100) / 4) - Math.abs(facX) * Math.round(Math.round(eventData.source.getRotation().y * 4 / 100) / 4)), cxz = 1 - Math.abs(facY);
+            let facString;
+            if ((facY == 2 || facY == -2) && facX == 0)
+                facString = "North";
+            else if (facY == 0 && facX == 0)
+                facString = "South";
+            else if (facY == 1 && facX == 0)
+                facString = "East";
+            else if (facY == -1 && facX == 0)
+                facString = "West";
+            else if (facX == 1)
+                facString = "Up";
+            else if (facX == -1)
+                facString = "Down";
+            try {
+                source.runCommand("title @s actionbar Direction: §d" + facString);
+                if (facX != 0) {
                     system.run(() => {
-                        overworld.runCommand("structure save my " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " false");
-                        overworld.runCommand("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
-                        overworld.runCommand("structure load my " + (vx1 + facY) + " " + vy1 + " " + vz1);
-                        overworld.runCommand("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~" + facY + "~~");
-                        sel1[0].addScore(source, facY);
-                        sel2[0].addScore(source, facY);
-                    });
-                else if (cxz < 2 && cxz > -2) {
-                    system.run(() => {
-                        overworld.runCommand("structure save my " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " false");
-                        overworld.runCommand("fill " + vx1 + " " + vy1 + " " + vz1 + " " + vx2 + " " + vy2 + " " + vz2 + " air []");
-                        overworld.runCommand("structure load my " + vx1 + " " + vy1 + " " + (vz1 + cxz));
-                        overworld.runCommand("execute positioned " + vx1 + " " + vy1 + " " + vz1 + " as @e[dx=" + (vx2 - vx1) + ",dy=" + (vy2 - vy1) + ",dz=" + (vz2 - vz1) + "] at @s run tp @s ~~~" + cxz);
-                        sel1[2].addScore(source, cxz);
-                        sel2[2].addScore(source, cxz);
+                        overworld.runCommand("structure save my " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " " + vcoords.x2 + " " + vcoords.y2 + " " + vcoords.z2 + " false");
+                        overworld.runCommand("fill " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " " + vcoords.x2 + " " + vcoords.y2 + " " + vcoords.z2 + " air []");
+                        overworld.runCommand("structure load my " + vcoords.x1 + " " + (vcoords.y1 + facX) + " " + vcoords.z1);
+                        overworld.runCommand("execute positioned " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " as @e[dx=" + (vcoords.x2 - vcoords.x1) + ",dy=" + (vcoords.y2 - vcoords.y1 + 1) + ",dz=" + (vcoords.z2 - vcoords.z1) + "] at @s run tp @s ~~" + facX + "~");
+                        selScoreObj.y1.addScore(source, facX);
+                        selScoreObj.y2.addScore(source, facX);
                     });
                 }
-            }
-        } catch { source.runCommand("title @s actionbar §cError"); }
-    }
-    else if (eventData.source.hasTag("__tp") && eventData.itemStack.typeId == "minecraft:arrow" && eventData.itemStack.nameTag == pointyTool) {
-        try {
-            var vx = 0, vy = 0, vz = 0;
-            var blocc = eventData.source.getBlockFromViewDirection().block, fac = eventData.source.getBlockFromViewDirection().face;
-            if (fac == "West") vx = -1;
-            else if (fac == "East") vx = 1;
-            if (fac == "North") vz = -1;
-            else if (fac == "South") vz = 1;
-            if (fac == "Down") vy = -1;
-            else if (fac == "Up") vy = 1;
-            eventData.source.teleport({ x: blocc.x + vx, y: blocc.y + vy, z: blocc.z + vz });
-        } catch (err) { eventData.source.runCommand("title @s actionbar Error: §cToo far") }
+                else if (facX == 0) {
+                    if (facY != -2 && facY != 2 && facY != 0)
+                        system.run(() => {
+                            overworld.runCommand("structure save my " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " " + vcoords.x2 + " " + vcoords.y2 + " " + vcoords.z2 + " false");
+                            overworld.runCommand("fill " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " " + vcoords.x2 + " " + vcoords.y2 + " " + vcoords.z2 + " air []");
+                            overworld.runCommand("structure load my " + (vcoords.x1 + facY) + " " + vcoords.y1 + " " + vcoords.z1);
+                            overworld.runCommand("execute positioned " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " as @e[dx=" + (vcoords.x2 - vcoords.x1) + ",dy=" + (vcoords.y2 - vcoords.y1) + ",dz=" + (vcoords.z2 - vcoords.z1) + "] at @s run tp @s ~" + facY + "~~");
+                            selScoreObj.x1.addScore(source, facY);
+                            selScoreObj.x2.addScore(source, facY);
+                        });
+                    else if (cxz < 2 && cxz > -2) {
+                        system.run(() => {
+                            overworld.runCommand("structure save my " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " " + vcoords.x2 + " " + vcoords.y2 + " " + vcoords.z2 + " false");
+                            overworld.runCommand("fill " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " " + vcoords.x2 + " " + vcoords.y2 + " " + vcoords.z2 + " air []");
+                            overworld.runCommand("structure load my " + vcoords.x1 + " " + vcoords.y1 + " " + (vcoords.z1 + cxz));
+                            overworld.runCommand("execute positioned " + vcoords.x1 + " " + vcoords.y1 + " " + vcoords.z1 + " as @e[dx=" + (vcoords.x2 - vcoords.x1) + ",dy=" + (vcoords.y2 - vcoords.y1) + ",dz=" + (vcoords.z2 - vcoords.z1) + "] at @s run tp @s ~~~" + cxz);
+                            selScoreObj.z1.addScore(source, cxz);
+                            selScoreObj.z2.addScore(source, cxz);
+                        });
+                    }
+                }
+            } catch { source.runCommand("title @s actionbar §cError"); }
+        }
+        else if (eventData.source.hasTag("__tp")) {
+            try {
+                let vx = 0, vy = 0, vz = 0;
+                let blocc = eventData.source.getBlockFromViewDirection().block, fac = eventData.source.getBlockFromViewDirection().face;
+                if (fac == "West") vx = -1;
+                else if (fac == "East") vx = 1;
+                if (fac == "North") vz = -1;
+                else if (fac == "South") vz = 1;
+                if (fac == "Down") vy = -1;
+                else if (fac == "Up") vy = 1;
+                eventData.source.teleport({ x: blocc.x + vx, y: blocc.y + vy, z: blocc.z + vz });
+            } catch (err) { eventData.source.runCommand("title @s actionbar Error: §cToo far") }
+        }
     }
 });
 system.runInterval(() => {
     for (let player of players) {
         if (player.isSprinting && player.isFlying) {
-            var flySpeed = world.scoreboard.getObjective("_flySpeed");
+            let flySpeed = world.scoreboard.getObjective("_flySpeed");
             if (flySpeed.getScore(player) > 1) {
-                var vewx = player.getViewDirection().x, vewz = player.getViewDirection().z;
+                let vewx = player.getViewDirection().x, vewz = player.getViewDirection().z;
                 // player.applyKnockback(vewx, vewz, flySpeed.getScore(player) / 2, flySpeed.getScore(player) * player.getViewDirection().y / 2);
                 player.applyKnockback({ x: vewx * flySpeed.getScore(player) / 2, z: vewz * flySpeed.getScore(player) / 2 }, flySpeed.getScore(player) * player.getViewDirection().y / 2);
             }
